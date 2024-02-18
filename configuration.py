@@ -36,3 +36,4 @@ class Config(object):
         self.XINGHUO_WEB = yconfig.get("xinghuo_web", {})
         self.CHATGLM = yconfig.get("chatglm", {})
         self.BardAssistant = yconfig.get("bard", {})
+        self.ChatWXYY = yconfig.get("wenxin", {})

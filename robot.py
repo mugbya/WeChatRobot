@@ -16,6 +16,7 @@ from base.func_chengyu import cy
 from base.func_news import News
 from base.func_tigerbot import TigerBot
 from base.func_xinghuo_web import XinghuoWeb
+from base.func_chatwxyy import ChatWXYY
 from configuration import Config
 from constants import ChatType
 from job_mgmt import Job
@@ -45,6 +46,8 @@ class Robot(Job):
                 self.chat = ChatGLM(self.config.CHATGLM)
             elif chat_type == ChatType.BardAssistant.value and BardAssistant.value_check(self.config.BardAssistant):
                 self.chat = BardAssistant(self.config.BardAssistant)
+            elif chat_type == ChatType.CHATWXYY.value and ChatWXYY.value_check(self.config.ChatWXYY):
+                self.chat = ChatWXYY(self.config.ChatWXYY)
             else:
                 self.LOG.warning("未配置模型")
                 self.chat = None
@@ -59,6 +62,8 @@ class Robot(Job):
                 self.chat = ChatGLM(self.config.CHATGLM)
             elif BardAssistant.value_check(self.config.BardAssistant):
                 self.chat = BardAssistant(self.config.BardAssistant)
+            elif ChatWXYY.value_check(self.config.ChatWXYY):
+                self.chat = ChatWXYY(self.config.ChatWXYY)
             else:
                 self.LOG.warning("未配置模型")
                 self.chat = None

@@ -9,12 +9,13 @@ class ChatType(IntEnum):
     XINGHUO_WEB = 3  # 讯飞星火
     CHATGLM = 4  # ChatGLM
     BardAssistant = 5  # Google Bard
+    CHATWXYY = 6  # 百度文心一言
 
     @staticmethod
     def is_in_chat_types(chat_type: int) -> bool:
         if chat_type in [ChatType.TIGER_BOT.value, ChatType.CHATGPT.value,
                          ChatType.XINGHUO_WEB.value, ChatType.CHATGLM.value,
-                         ChatType.BardAssistant.value]:
+                         ChatType.BardAssistant.value, ChatType.CHATWXYY.value]:
             return True
         return False
 
