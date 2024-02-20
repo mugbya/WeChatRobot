@@ -180,7 +180,7 @@ class Robot(Job):
         try:
             self.LOG.info(msg)  # 打印信息
             flag = self.command(msg)  # 首先执行指令
-            print("【执行指令执行结果】" + flag)
+            self.LOG.info(f"【执行指令执行结果】{flag}")
             if not flag:
                 self.processMsg(msg)
         except Exception as e:
@@ -196,7 +196,11 @@ class Robot(Job):
                 try:
                     msg = wcf.get_msg()
                     self.LOG.info(msg)
-                    self.processMsg(msg)
+                    flag = self.command(msg)  # 首先执行指令
+                    self.LOG.info(f"【执行指令执行结果】{flag}")
+                    if not flag:
+                        self.processMsg(msg)
+                    # self.processMsg(msg)
                 except Empty:
                     continue  # Empty message
                 except Exception as e:
