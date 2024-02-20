@@ -6,11 +6,18 @@ import json
 
 love_function_list = ["喝水提醒"]
 
-manage_function_list = ["启用大橘", "禁用大橘", "大橘状态"]
+common_function_list = ["启用大橘", "禁用大橘", "大橘状态"]
+base_function_list = ["启用大橘", "禁用大橘", "大橘状态"]
+admin_function_list = ["启用大橘", "禁用大橘", "大橘状态", "小黑屋"]
 
-function_list = ["今日新闻", ]
 
-menu = '''
+base_function_list = ["今日新闻", "天气"]
+rome_function_list = ["今日新闻", "天气", "签到", "抽签", "抽奖", "打劫", "开宝箱", "排行榜", "礼物", "日活跃度", "月活跃度"]
+
+
+person_menu = """启用大橘 | 禁用大橘 | 大橘状态"""
+
+room_menu = '''
 ======功能菜单======
 🍀签        到🔥抽        签🔯
 🎁抽        奖🔥打        劫💰
@@ -22,40 +29,16 @@ menu = '''
 '''
 
 
-# def command(msg, robot):
-#     text = msg.content
-#
-#     user = None
-#     if msg.sender:
-#         user = msg.sender
-#     if msg.roomid:
-#         user = msg.roomid
-#
-#
-#     if text in manage_function_list:
-#         with open("enable.json", "w+") as f:
-#             file_data = f.readlines()
-#             data_dict = {}
-#             if file_data:
-#                 data_dict = json.loads(file_data)
-#             if text == "启用大橘":
-#                 data_dict.update({"user": 1})
-#             elif text == "禁用大橘":
-#                 data_dict.update({"user": 0})
-#             f.write(json.dumps(data_dict))
-#
-#
-#     if text in function_list:
-#         # print("tips: " + text)
-#         if text == "今日新闻":
-#             # print("tips： 今日新闻")
-#             # robot.newsReport()
-#             news = News().get_important_news()
-#
-#             robot.sendTextMsg(news, user)
-#             return True
-#     return False
+def common_activity(msg, activity_dict):
+    room_data_dict = activity_dict.get(msg.roomid)
+    if not room_data_dict:
+        room_data_dict = {}
+    day_cnt = room_data_dict.get(msg.sender)
+    if not day_cnt:
+        day_cnt = 1
+    else:
+        day_cnt += 1
+    room_data_dict.update({msg.sender: day_cnt})
+    activity_dict.update(room_data_dict)
 
 
-# text = "今日新闻"
-# tips(text, None)

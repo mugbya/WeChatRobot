@@ -35,7 +35,9 @@ class Robot(Job):
         self.LOG = logging.getLogger("Robot")
         self.wxid = self.wcf.get_self_wxid()
         self.allContacts = self.getAllContacts()
-        self.enable_robot_dict = {}
+        self.enable_robot_dict = {} # 记录个人/群是否启用机器人
+        self.day_activity = {} # 记录群里的日活跃度
+        self.month_activity = {} # 记录群里的月活跃度
 
         if ChatType.is_in_chat_types(chat_type):
             if chat_type == ChatType.TIGER_BOT.value and TigerBot.value_check(self.config.TIGERBOT):
@@ -199,6 +201,7 @@ class Robot(Job):
                     flag = self.manage_command(msg)  # 首先执行指令
                     self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
                     if not flag:
+                        self.record_count_msg(msg) # 记录发言次数，方便统计活跃度
                         flag = self.command(msg)  # 执行一般执行
                         if not flag:
                             self.processMsg(msg)
@@ -287,6 +290,21 @@ class Robot(Job):
         for r in receivers:
             self.sendTextMsg("我的公主，1小时到了，起来去喝水吧 😘", r)
 
+    def print_command(self, msg):
+        text, user = self.command_common(msg)
+
+        if "@chatroom" in user:
+            self.sendTextMsg(room_menu, user)
+        else:
+            self.sendTextMsg(person_menu, user)
+
+
+    def record_count_msg(self, msg):
+        # key = msg.roomid + "-" + msg.sender
+        common_activity(msg, self.day_activity)
+        common_activity(msg, self.month_activity)
+        self.LOG.info(f"记录活跃度 日活: {self.day_activity}, 月活: {self.month_activity}")
+
     def command_common(self, msg):
         text = msg.content
         user = None
@@ -300,7 +318,7 @@ class Robot(Job):
     def manage_command(self, msg):
         text, user = self.command_common(msg)
 
-        if text in manage_function_list:
+        if text in base_function_list:
             self.LOG.info(f"【管理指令】{text}")
             with open("enable.json", "w+") as f:
                 file_data = f.readlines()
@@ -316,9 +334,9 @@ class Robot(Job):
                     self.sendTextMsg("大橘已经开始沉默 🐱🐱🐱", user)
                 elif text == "大橘状态":
                     rst = self.enable_robot_dict.get(user)
-                    if rst == 1:
+                    if rst == 1 or rst is None:
                         self.sendTextMsg("大橘正在提供服务～🐱", user)
-                    else:
+                    elif rst == 1:
                         self.sendTextMsg("大橘正在沉默中 🐱🐱🐱", user)
                 self.enable_robot_dict.update(data_dict)
                 self.LOG.info(f"【当前缓存的机器人启用情况】{str(self.enable_robot_dict)}")
@@ -340,11 +358,24 @@ class Robot(Job):
             if "@chatroom" in user:
                 return True
 
-        if text in function_list:
-            self.LOG.info(f"【普通指令】{text}")
-            if text == "今日新闻":
-                news = News().get_important_news()
-                self.sendTextMsg(news, user)
-                # 执行到具体的一般指令，也返回True，便于后续不在执行
-                return True
+        # 如果是群，则匹配群指令功能
+        if "@chatroom" in user:
+            if text in rome_function_list:
+                self.LOG.info(f"【普通指令】{text}")
+                if text == "今日新闻":
+                    news = News().get_important_news()
+                    self.sendTextMsg(news, user)
+                    # 执行到具体的一般指令，也返回True，便于后续不在执行
+                    return True
+                if text == "签到":
+                    pass
+
+        else:
+            if text in base_function_list:
+                self.LOG.info(f"【普通指令】{text}")
+                if text == "今日新闻":
+                    news = News().get_important_news()
+                    self.sendTextMsg(news, user)
+                    # 执行到具体的一般指令，也返回True，便于后续不在执行
+                    return True
         return False

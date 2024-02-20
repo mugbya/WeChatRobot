@@ -22,7 +22,6 @@ class ChatWXYY:
 
         self.fallback = ["再见", "不要调戏我", "赶紧滚"]
 
-
     def __repr__(self):
         return '文心一言'
 
@@ -39,7 +38,7 @@ class ChatWXYY:
         return False
 
     def get_answer(self, msg: str, sender: str = None) -> str:
-        print("msg: " + msg)
+        # print("msg: " + msg)
         rsp = ""
         try:
             rsp = self.ai_qs(msg, sender)
@@ -90,8 +89,8 @@ class ChatWXYY:
         }
 
         response = requests.request("POST", url, headers=headers, data=payload, stream=False)
-        print("response--")
-        print(response.text)
+        # print("response--")
+        # print(response.text)
         dict_rsp = json.loads(response.text)
         result = dict_rsp.get("result")
         return result
