@@ -180,7 +180,7 @@ class Robot(Job):
         try:
             self.LOG.info(msg)  # 打印信息
             flag = self.manage_command(msg)  # 首先执行管理指令
-            self.LOG.info(f"【执行管理指令执行结果】True表示不执行后续: {flag}")
+            self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
             if not flag:
                 self.processMsg(msg)
         except Exception as e:
@@ -197,7 +197,7 @@ class Robot(Job):
                     msg = wcf.get_msg()
                     self.LOG.info(msg)
                     flag = self.manage_command(msg)  # 首先执行指令
-                    self.LOG.info(f"【执行管理指令执行结果】True表示不执行后续: {flag}")
+                    self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
                     if not flag:
                         flag = self.command(msg)  # 执行一般执行
                         if not flag:
@@ -294,7 +294,7 @@ class Robot(Job):
             user = msg.sender
         if msg.roomid:
             user = msg.roomid
-        self.LOG.info("command：" + text)
+        self.LOG.info("指令：" + text)
         return text, user
 
     def manage_command(self, msg):
@@ -321,7 +321,9 @@ class Robot(Job):
     def command(self, msg):
         text, user = self.command_common(msg)
 
-        if self.enable_robot_dict.get(user) == 0:
+        rst = self.enable_robot_dict.get(user)
+        self.LOG.info(f"【普通指令】当前用户/群{user} 是否启用了大橘(1-启用 0-禁用)。当前: {rst}")
+        if rst == 0:
             # 如果被禁用，返回True
             return True
 
