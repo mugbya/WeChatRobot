@@ -330,10 +330,15 @@ class Robot(Job):
         text, user = self.command_common(msg)
 
         rst = self.enable_robot_dict.get(user)
-        self.LOG.info(f"【普通指令】当前用户/群{user} 是否启用了大橘(1-启用 0-禁用)。当前: {rst}")
-        if rst is None or rst == 0:
+        self.LOG.info(f"【是否启用了大橘】当前用户/群{user} 状态：{rst}. (1-启用 0-禁用)")
+        if rst == 0:
             # 如果被禁用，返回True
             return True
+
+        if rst is None:
+            # 初始化时群默认不开启大橘，个人默认开启大橘
+            if "@chatroom" in user:
+                return True
 
         if text in function_list:
             self.LOG.info(f"【普通指令】{text}")
