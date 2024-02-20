@@ -55,6 +55,9 @@ def main(chat_type: int):
     # 每天 16:30 提醒发日报周报月报
     robot.onEveryTime("16:30", ReportReminder.remind, robot=robot)
 
+    # 每小时发送活动/喝水提醒
+    robot.onEveryTime(["10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"], robot.drink)
+
     # 让机器人一直跑
     robot.keepRunningAndBlockProcess()
 

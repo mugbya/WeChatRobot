@@ -270,3 +270,11 @@ class Robot(Job):
         news = News().get_important_news()
         for r in receivers:
             self.sendTextMsg(news, r)
+
+    def drink(self) -> None:
+        receivers = self.config.DRINK
+        if not receivers:
+            return
+
+        for r in receivers:
+            self.sendTextMsg("我的公主，1小时到了，起来去喝水吧 😘", r)

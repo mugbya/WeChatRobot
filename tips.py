@@ -9,13 +9,11 @@ function_list = ["今日新闻", ]
 
 
 def tips(msg, robot):
-    print("tips")
     text = msg.content
-    # print("tips: " + (text in function_list))
     if text in function_list:
-        print("tips: " + text)
+        # print("tips: " + text)
         if text == "今日新闻":
-            print("tips： 今日新闻")
+            # print("tips： 今日新闻")
             # robot.newsReport()
             news = News().get_important_news()
             if msg.roomid:
