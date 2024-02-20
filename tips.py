@@ -6,10 +6,10 @@ love_function_list = ["喝水提醒"]
 function_list = ["今日新闻", ]
 
 
-def tips(text: str, robot):
+def tips(text, robot):
     print("tips")
     print("tips: " + text)
-    print("tips: " + (text in function_list))
+    # print("tips: " + (text in function_list))
     if text in function_list:
         print("tips: " + text)
         if text == "今日新闻":
