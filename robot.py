@@ -35,6 +35,7 @@ class Robot(Job):
         self.LOG = logging.getLogger("Robot")
         self.wxid = self.wcf.get_self_wxid()
         self.allContacts = self.getAllContacts()
+        self.enable_robot_dict = {}
 
         if ChatType.is_in_chat_types(chat_type):
             if chat_type == ChatType.TIGER_BOT.value and TigerBot.value_check(self.config.TIGERBOT):
@@ -150,7 +151,7 @@ class Robot(Job):
             if msg.is_at(self.wxid):  # 被@
                 self.toAt(msg)
 
-            tips(msg, self)
+            # tips(msg, self)
 
             # else:  # 其他消息
             #     self.toChengyu(msg)
@@ -171,18 +172,18 @@ class Robot(Job):
                     self.config.reload()
                     self.LOG.info("已更新")
             else:
-                flag = tips(msg, self)
-                if not flag:
-                    self.toChitchat(msg)  # 闲聊
+                # flag = tips(msg, self)
+                # if not flag:
+                self.toChitchat(msg)  # 闲聊
 
     def onMsg(self, msg: WxMsg) -> int:
         try:
             self.LOG.info(msg)  # 打印信息
-            self.processMsg(msg)
-
+            flag = self.command(msg)  # 首先执行指令
+            if not flag:
+                self.processMsg(msg)
         except Exception as e:
             self.LOG.error(e)
-
         return 0
 
     def enableRecvMsg(self) -> None:
@@ -278,3 +279,42 @@ class Robot(Job):
 
         for r in receivers:
             self.sendTextMsg("我的公主，1小时到了，起来去喝水吧 😘", r)
+
+    def command(self, msg):
+        text = msg.content
+
+        user = None
+        if msg.sender:
+            user = msg.sender
+        if msg.roomid:
+            user = msg.roomid
+
+        if text in manage_function_list:
+            with open("enable.json", "w+") as f:
+                file_data = f.readlines()
+                data_dict = {}
+                if file_data:
+                    data_dict = json.loads(file_data)
+                if text == "启用大橘":
+                    data_dict.update({"user": 1})
+                elif text == "禁用大橘":
+                    data_dict.update({"user": 0})
+                self.enable_robot_dict.update(data_dict)
+                print("【当前缓存的机器人启用情况】" + str(self.enable_robot_dict))
+                print("【当前文本的机器人启用情况】" + data_dict)
+                f.write(json.dumps(data_dict))
+
+        if not self.enable_robot_dict.get(user):
+            # 如果被禁用，直接不响应
+            return True
+
+        if text in function_list:
+            # print("tips: " + text)
+            if text == "今日新闻":
+                # print("tips： 今日新闻")
+                # robot.newsReport()
+                news = News().get_important_news()
+
+                self.sendTextMsg(news, user)
+                return True
+        return False
