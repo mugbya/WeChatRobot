@@ -319,9 +319,10 @@ class Robot(Job):
         if self.enable_robot_dict.get(user) == 0:
             # 如果被禁用，直接不响应
             return True
+        return False
 
     def command(self, msg):
-        text, user = self.comand_common(msg)
+        text, user = self.command_common(msg)
 
         if text in function_list:
             if text == "今日新闻":
