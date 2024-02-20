@@ -180,7 +180,7 @@ class Robot(Job):
         try:
             self.LOG.info(msg)  # 打印信息
             flag = self.command(msg)  # 首先执行指令
-            self.LOG.info(f"【执行指令执行结果】{flag}")
+            self.LOG.info(f"【执行指令执行结果】True表示不执行后续: {flag}")
             if not flag:
                 self.processMsg(msg)
         except Exception as e:
@@ -197,7 +197,7 @@ class Robot(Job):
                     msg = wcf.get_msg()
                     self.LOG.info(msg)
                     flag = self.command(msg)  # 首先执行指令
-                    self.LOG.info(f"【执行指令执行结果】{flag}")
+                    self.LOG.info(f"【执行指令执行结果】True表示不执行后续: {flag}")
                     if not flag:
                         self.processMsg(msg)
                     # self.processMsg(msg)
@@ -302,15 +302,15 @@ class Robot(Job):
                 if file_data:
                     data_dict = json.loads(file_data)
                 if text == "启用大橘":
-                    data_dict.update({"user": 1})
+                    data_dict.update({user: 1})
                 elif text == "禁用大橘":
-                    data_dict.update({"user": 0})
+                    data_dict.update({user: 0})
                 self.enable_robot_dict.update(data_dict)
                 print("【当前缓存的机器人启用情况】" + str(self.enable_robot_dict))
                 print("【当前文本的机器人启用情况】" + data_dict)
                 f.write(json.dumps(data_dict))
 
-        if not self.enable_robot_dict.get(user):
+        if self.enable_robot_dict.get(user) == "0":
             # 如果被禁用，直接不响应
             return True
 
