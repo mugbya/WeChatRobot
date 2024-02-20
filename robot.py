@@ -9,6 +9,7 @@ from threading import Thread
 
 from wcferry import Wcf, WxMsg
 
+from tips import *
 from base.func_bard import BardAssistant
 from base.func_chatglm import ChatGLM
 from base.func_chatgpt import ChatGPT
@@ -173,6 +174,7 @@ class Robot(Job):
         try:
             self.LOG.info(msg)  # 打印信息
             self.processMsg(msg)
+            tips(msg, self)
         except Exception as e:
             self.LOG.error(e)
 
