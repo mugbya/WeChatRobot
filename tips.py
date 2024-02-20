@@ -22,39 +22,39 @@ menu = '''
 '''
 
 
-def command(msg, robot):
-    text = msg.content
-
-    user = None
-    if msg.sender:
-        user = msg.sender
-    if msg.roomid:
-        user = msg.roomid
-
-
-    if text in manage_function_list:
-        with open("enable.json", "w+") as f:
-            file_data = f.readlines()
-            data_dict = {}
-            if file_data:
-                data_dict = json.loads(file_data)
-            if text == "启用大橘":
-                data_dict.update({"user": 1})
-            elif text == "禁用大橘":
-                data_dict.update({"user": 0})
-            f.write(json.dumps(data_dict))
-
-
-    if text in function_list:
-        # print("tips: " + text)
-        if text == "今日新闻":
-            # print("tips： 今日新闻")
-            # robot.newsReport()
-            news = News().get_important_news()
-
-            robot.sendTextMsg(news, user)
-            return True
-    return False
+# def command(msg, robot):
+#     text = msg.content
+#
+#     user = None
+#     if msg.sender:
+#         user = msg.sender
+#     if msg.roomid:
+#         user = msg.roomid
+#
+#
+#     if text in manage_function_list:
+#         with open("enable.json", "w+") as f:
+#             file_data = f.readlines()
+#             data_dict = {}
+#             if file_data:
+#                 data_dict = json.loads(file_data)
+#             if text == "启用大橘":
+#                 data_dict.update({"user": 1})
+#             elif text == "禁用大橘":
+#                 data_dict.update({"user": 0})
+#             f.write(json.dumps(data_dict))
+#
+#
+#     if text in function_list:
+#         # print("tips: " + text)
+#         if text == "今日新闻":
+#             # print("tips： 今日新闻")
+#             # robot.newsReport()
+#             news = News().get_important_news()
+#
+#             robot.sendTextMsg(news, user)
+#             return True
+#     return False
 
 
 # text = "今日新闻"

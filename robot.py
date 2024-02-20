@@ -289,6 +289,7 @@ class Robot(Job):
         if msg.roomid:
             user = msg.roomid
 
+        print("command：" + text)
         if text in manage_function_list:
             with open("enable.json", "w+") as f:
                 file_data = f.readlines()
