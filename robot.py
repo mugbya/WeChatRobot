@@ -150,7 +150,7 @@ class Robot(Job):
             if msg.is_at(self.wxid):  # 被@
                 self.toAt(msg)
 
-            tips(msg.content, self)
+            tips(msg, self)
 
             # else:  # 其他消息
             #     self.toChengyu(msg)
