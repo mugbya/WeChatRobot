@@ -311,7 +311,7 @@ class Robot(Job):
                 self.LOG.info(f"【当前文本的机器人启用情况】{data_dict}")
                 f.write(json.dumps(data_dict))
 
-        if self.enable_robot_dict.get(user) == "0":
+        if self.enable_robot_dict.get(user) == 0:
             # 如果被禁用，直接不响应
             return True
 
