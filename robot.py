@@ -143,7 +143,7 @@ class Robot(Job):
 
         # 群聊消息
         if msg.from_group():
-            print("群聊消息---")
+            # print("群聊消息---")
             # 如果在群里被 @
             if msg.roomid not in self.config.GROUPS:  # 不在配置的响应的群列表里，忽略
                 return
@@ -294,13 +294,14 @@ class Robot(Job):
             user = msg.sender
         if msg.roomid:
             user = msg.roomid
-        self.LOG.info("指令：" + text)
+
         return text, user
 
     def manage_command(self, msg):
         text, user = self.command_common(msg)
 
         if text in manage_function_list:
+            self.LOG.info(f"【管理指令】{text}")
             with open("enable.json", "w+") as f:
                 file_data = f.readlines()
                 data_dict = {}
@@ -309,12 +310,19 @@ class Robot(Job):
                     data_dict = json.loads(file_data)
                 if text == "启用大橘":
                     data_dict.update({user: 1})
+                    self.sendTextMsg("大橘开始提供服务 🐱", user)
                 elif text == "禁用大橘":
                     data_dict.update({user: 0})
+                    self.sendTextMsg("大橘已经开始沉默 🐱🐱🐱", user)
+                elif text == "大橘状态":
+                    rst = self.enable_robot_dict.get(user)
+                    if rst:
+                        self.sendTextMsg("大橘正在提供服务～🐱", user)
+                    else:
+                        self.sendTextMsg("大橘正在沉默中 🐱🐱🐱", user)
                 self.enable_robot_dict.update(data_dict)
                 self.LOG.info(f"【当前缓存的机器人启用情况】{str(self.enable_robot_dict)}")
-                self.LOG.info(f"【当前文本的机器人启用情况】{data_dict}")
-                f.write(json.dumps(data_dict))
+                f.write(json.dumps(self.enable_robot_dict))
                 return True
         return False
 
@@ -323,11 +331,12 @@ class Robot(Job):
 
         rst = self.enable_robot_dict.get(user)
         self.LOG.info(f"【普通指令】当前用户/群{user} 是否启用了大橘(1-启用 0-禁用)。当前: {rst}")
-        if rst == 0:
+        if rst:
             # 如果被禁用，返回True
             return True
 
         if text in function_list:
+            self.LOG.info(f"【普通指令】{text}")
             if text == "今日新闻":
                 news = News().get_important_news()
                 self.sendTextMsg(news, user)
