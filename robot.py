@@ -300,14 +300,15 @@ class Robot(Job):
                 file_data = f.readlines()
                 data_dict = {}
                 if file_data:
+                    self.LOG.info(f"【先读取文件】{file_data}")
                     data_dict = json.loads(file_data)
                 if text == "启用大橘":
                     data_dict.update({user: 1})
                 elif text == "禁用大橘":
                     data_dict.update({user: 0})
                 self.enable_robot_dict.update(data_dict)
-                print("【当前缓存的机器人启用情况】" + str(self.enable_robot_dict))
-                print("【当前文本的机器人启用情况】" + data_dict)
+                self.LOG.info(f"【当前缓存的机器人启用情况】{str(self.enable_robot_dict)}")
+                self.LOG.info(f"【当前文本的机器人启用情况】{data_dict}")
                 f.write(json.dumps(data_dict))
 
         if self.enable_robot_dict.get(user) == "0":
