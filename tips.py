@@ -17,6 +17,6 @@ def tips(text: str, robot):
     return False
 
 
-text = "今日新闻"
+# text = "今日新闻"
 
-tips(text, None)
+# tips(text, None)
