@@ -180,6 +180,7 @@ class Robot(Job):
         try:
             self.LOG.info(msg)  # 打印信息
             flag = self.command(msg)  # 首先执行指令
+            print("【执行指令执行结果】" + flag)
             if not flag:
                 self.processMsg(msg)
         except Exception as e:
