@@ -149,8 +149,10 @@ class Robot(Job):
             if msg.is_at(self.wxid):  # 被@
                 self.toAt(msg)
 
-            else:  # 其他消息
-                self.toChengyu(msg)
+            tips(msg, self)
+
+            # else:  # 其他消息
+            #     self.toChengyu(msg)
 
             return  # 处理完群聊信息，后面就不需要处理了
 
@@ -174,7 +176,7 @@ class Robot(Job):
         try:
             self.LOG.info(msg)  # 打印信息
             self.processMsg(msg)
-            tips(msg, self)
+
         except Exception as e:
             self.LOG.error(e)
 
