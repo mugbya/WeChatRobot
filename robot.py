@@ -142,6 +142,7 @@ class Robot(Job):
 
         # 群聊消息
         if msg.from_group():
+            print("群聊消息---")
             # 如果在群里被 @
             if msg.roomid not in self.config.GROUPS:  # 不在配置的响应的群列表里，忽略
                 return
@@ -170,7 +171,9 @@ class Robot(Job):
                     self.config.reload()
                     self.LOG.info("已更新")
             else:
-                self.toChitchat(msg)  # 闲聊
+                flag = tips(msg, self)
+                if not flag:
+                    self.toChitchat(msg)  # 闲聊
 
     def onMsg(self, msg: WxMsg) -> int:
         try:
