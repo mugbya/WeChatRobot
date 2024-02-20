@@ -18,8 +18,12 @@ def tips(msg, robot):
             print("tips： 今日新闻")
             # robot.newsReport()
             news = News().get_important_news()
-            robot.sendTextMsg(news, msg.sender)
-            return True
+            if msg.roomid:
+                robot.sendTextMsg(news, msg.roomid)
+                return True
+            if msg.sender:
+                robot.sendTextMsg(news, msg.sender)
+                return True
     return False
 
 
