@@ -179,8 +179,8 @@ class Robot(Job):
     def onMsg(self, msg: WxMsg) -> int:
         try:
             self.LOG.info(msg)  # 打印信息
-            flag = self.command(msg)  # 首先执行指令
-            self.LOG.info(f"【执行指令执行结果】True表示不执行后续: {flag}")
+            flag = self.manage_command(msg)  # 首先执行管理指令
+            self.LOG.info(f"【执行管理指令执行结果】True表示不执行后续: {flag}")
             if not flag:
                 self.processMsg(msg)
         except Exception as e:
@@ -196,10 +196,12 @@ class Robot(Job):
                 try:
                     msg = wcf.get_msg()
                     self.LOG.info(msg)
-                    flag = self.command(msg)  # 首先执行指令
-                    self.LOG.info(f"【执行指令执行结果】True表示不执行后续: {flag}")
+                    flag = self.manage_command(msg)  # 首先执行指令
+                    self.LOG.info(f"【执行管理指令执行结果】True表示不执行后续: {flag}")
                     if not flag:
-                        self.processMsg(msg)
+                        flag = self.command(msg)  # 执行一般执行
+                        if not flag:
+                            self.processMsg(msg)
                     # self.processMsg(msg)
                 except Empty:
                     continue  # Empty message
@@ -285,16 +287,19 @@ class Robot(Job):
         for r in receivers:
             self.sendTextMsg("我的公主，1小时到了，起来去喝水吧 😘", r)
 
-    def command(self, msg):
+    def command_common(self, msg):
         text = msg.content
-
         user = None
         if msg.sender:
             user = msg.sender
         if msg.roomid:
             user = msg.roomid
+        self.LOG.info("command：" + text)
+        return text, user
 
-        print("command：" + text)
+    def manage_command(self, msg):
+        text, user = self.command_common(msg)
+
         if text in manage_function_list:
             with open("enable.json", "w+") as f:
                 file_data = f.readlines()
@@ -315,13 +320,12 @@ class Robot(Job):
             # 如果被禁用，直接不响应
             return True
 
-        if text in function_list:
-            # print("tips: " + text)
-            if text == "今日新闻":
-                # print("tips： 今日新闻")
-                # robot.newsReport()
-                news = News().get_important_news()
+    def command(self, msg):
+        text, user = self.comand_common(msg)
 
+        if text in function_list:
+            if text == "今日新闻":
+                news = News().get_important_news()
                 self.sendTextMsg(news, user)
                 return True
         return False
