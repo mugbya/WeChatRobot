@@ -316,7 +316,7 @@ class Robot(Job):
                     self.sendTextMsg("大橘已经开始沉默 🐱🐱🐱", user)
                 elif text == "大橘状态":
                     rst = self.enable_robot_dict.get(user)
-                    if rst:
+                    if rst == 1:
                         self.sendTextMsg("大橘正在提供服务～🐱", user)
                     else:
                         self.sendTextMsg("大橘正在沉默中 🐱🐱🐱", user)
@@ -331,7 +331,7 @@ class Robot(Job):
 
         rst = self.enable_robot_dict.get(user)
         self.LOG.info(f"【普通指令】当前用户/群{user} 是否启用了大橘(1-启用 0-禁用)。当前: {rst}")
-        if rst:
+        if rst is None or rst == 0:
             # 如果被禁用，返回True
             return True
 
