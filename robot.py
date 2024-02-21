@@ -339,10 +339,17 @@ class Robot(Job):
                     self.sendTextMsg("大橘已经开始沉默 🐱🐱🐱", user)
                 elif text == "大橘状态":
                     rst = self.enable_robot_dict.get(user)
-                    if rst == 1 or rst is None:
+                    if rst == 1:
                         self.sendTextMsg("大橘正在提供服务～🐱", user)
-                    elif rst == 1:
+                    elif rst == 0:
                         self.sendTextMsg("大橘正在沉默中 🐱🐱🐱", user)
+                    if rst is None:
+                        # 如果还没初始化使能情况
+                        if "@chatroom" in user:
+                            self.sendTextMsg("大橘正在沉默中 🐱🐱🐱", user)  # 群默认不开启
+                        else:
+                            self.sendTextMsg("大橘正在提供服务～🐱", user)
+
                 self.enable_robot_dict.update(data_dict)
                 self.LOG.info(f"【当前缓存的机器人启用情况】{str(self.enable_robot_dict)}")
                 f.write(json.dumps(self.enable_robot_dict))
