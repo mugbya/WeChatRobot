@@ -10,9 +10,7 @@ class RoomFunc(object):
 
     def __init__(self) -> None:
         self.LOG = logging.getLogger("Robot")
-        self.room_members = {}
-
-
+        # self.room_members = {}
 
 
     @staticmethod

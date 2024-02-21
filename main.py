@@ -3,6 +3,7 @@
 
 import signal
 from argparse import ArgumentParser
+import datetime
 
 from base.func_report_reminder import ReportReminder
 from configuration import Config
@@ -60,6 +61,15 @@ def main(chat_type: int):
 
     # 每5s中存一次相关变量
     robot.onEverySeconds(5, robot.save_cache)
+
+    # 每天0点清理
+    robot.onEveryTime("00:00", robot.init_current_day_data)
+
+    # 每月天0点清理
+    today = datetime.datetime.now().date()
+    if ReportReminder.last_work_friday_of_month(today) == today:
+        robot.onEveryTime("00:00", robot.init_current_month_data)
+
 
     # 让机器人一直跑
     robot.keepRunningAndBlockProcess()

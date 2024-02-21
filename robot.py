@@ -46,11 +46,11 @@ class Robot(Job):
         self.month_activity = {}  # 记录群里的月活跃度
         self.all_activity = {}  # 记录群里的总活跃度
 
-        dbs = self.wcf.get_dbs()
-        self.LOG.info(f"【dbs】{str(dbs)}")
-
-        tables = self.wcf.get_tables("ChatMsg.db")
-        self.LOG.info(f"【tables】{str(tables)}")
+        # dbs = self.wcf.get_dbs()
+        # self.LOG.info(f"【dbs】{str(dbs)}")
+        #
+        # tables = self.wcf.get_tables("ChatMsg.db")
+        # self.LOG.info(f"【tables】{str(tables)}")
 
         with open("room/day_activity", "r") as f:
             line = f.readline()
@@ -118,7 +118,7 @@ class Robot(Job):
         :param msg: 微信消息结构
         :return: 处理状态，`True` 成功，`False` 失败
         """
-        if self.enable_robot():
+        if self.enable_robot(msg):
             return self.toChitchat(msg)
         return False
 
@@ -213,7 +213,7 @@ class Robot(Job):
                     self.config.reload()
                     self.LOG.info("已更新")
             else:
-                if self.enable_robot():
+                if self.enable_robot(msg):
                     self.toChitchat(msg)  # 闲聊
 
     def onMsg(self, msg: WxMsg) -> int:
@@ -400,3 +400,14 @@ class Robot(Job):
             f.write(json.dumps(self.month_activity))
         with open("room/all_activity", "w") as f:
             f.write(json.dumps(self.all_activity))
+
+    def init_current_day_data(self):
+        self.day_activity = {}
+        with open("room/day_activity", "w") as f:
+            f.write(json.dumps(self.day_activity))
+
+    def init_current_month_data(self):
+        self.month_activity = {}
+        with open("room/month_activity", "w") as f:
+            f.write(json.dumps(self.month_activity))
+
