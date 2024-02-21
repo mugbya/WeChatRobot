@@ -201,7 +201,7 @@ class Robot(Job):
                     flag = self.manage_command(msg)  # 首先执行指令
                     self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
                     if not flag:
-                        self.record_count_msg(msg) # 记录发言次数，方便统计活跃度
+                        self.record_count_msg(msg)  # 记录发言次数，方便统计活跃度
                         flag = self.command(msg)  # 执行一般执行
                         if not flag:
                             self.processMsg(msg)
