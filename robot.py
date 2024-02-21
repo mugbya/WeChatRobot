@@ -46,6 +46,13 @@ class Robot(Job):
         self.month_activity = {}  # 记录群里的月活跃度
         self.all_activity = {}  # 记录群里的总活跃度
 
+        tables = self.wcf.get_tables()
+        self.LOG.info(f"【tables】{str(tables)}")
+
+        chatroom_members = self.wcf.get_chatroom_members()
+        self.LOG.info(f"【chatroom_members】{str(chatroom_members)}")
+
+
         with open("room/day_activity", "r") as f:
             line = f.readline()
             if line:

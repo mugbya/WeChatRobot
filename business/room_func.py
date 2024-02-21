@@ -5,6 +5,7 @@ import logging
 from tips import *
 from base.func_news import News
 
+
 class RoomFunc(object):
 
     def __init__(self) -> None:
@@ -20,6 +21,7 @@ class RoomFunc(object):
         # self.LOG.info(f"msg其他：roomid: {msg.roomid}, sender: {msg.sender}")
         RoomFunc.common_activity(msg, robot.day_activity)
         RoomFunc.common_activity(msg, robot.month_activity)
+        RoomFunc.common_activity(msg, robot.all_activity)
         self.LOG.info(f"记录活跃度 日活: {robot.day_activity}")
         self.LOG.info(f"记录活跃度 月活: {robot.month_activity}")
 
