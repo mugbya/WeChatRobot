@@ -70,7 +70,6 @@ def main(chat_type: int):
     if ReportReminder.last_work_friday_of_month(today) == today:
         robot.onEveryTime("00:00", robot.init_current_month_data)
 
-
     # 让机器人一直跑
     robot.keepRunningAndBlockProcess()
 

@@ -12,7 +12,6 @@ class RoomFunc(object):
         self.LOG = logging.getLogger("Robot")
         # self.room_members = {}
 
-
     @staticmethod
     def welcome(msg, robot):
         content = msg.content
@@ -30,6 +29,8 @@ class RoomFunc(object):
     @staticmethod
     def handler_command(msg, robot):
         content = msg.content
+        if "功能列表" == content:
+            robot.sendTextMsg(room_menu, msg.roomid)
         if "签到" == content:
             pass
         if "抽签" == content:

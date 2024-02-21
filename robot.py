@@ -213,13 +213,13 @@ class Robot(Job):
                     self.config.reload()
                     self.LOG.info("已更新")
             else:
-                if self.enable_robot(msg):
+                if self.baseFunc.enable_robot(msg, self):
                     self.toChitchat(msg)  # 闲聊
 
     def onMsg(self, msg: WxMsg) -> int:
         try:
             self.LOG.info(msg)  # 打印信息
-            flag = self.manage_command(msg)  # 首先执行管理指令
+            flag = self.baseFunc.manage_command(msg, self)  # 首先执行管理指令
             self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
             if not flag:
                 self.processMsg(msg)
@@ -238,7 +238,7 @@ class Robot(Job):
                     # self.LOG.info(msg)
                     self.LOG.info(f"msg：roomid: {msg.roomid}, sender: {msg.sender}, content: {msg.content}")
 
-                    flag = self.manage_command(msg)  # 首先执行指令
+                    flag = self.baseFunc.manage_command(msg, self)  # 首先执行管理指令
                     self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
                     if not flag:
                         self.processMsg(msg)
@@ -310,7 +310,6 @@ class Robot(Job):
             self.allContacts[msg.sender] = nickName[0]
             self.sendTextMsg(f"Hi {nickName[0]}，我自动通过了你的好友请求。", msg.sender)
 
-
     def newsReport(self) -> None:
         receivers = self.config.NEWS
         if not receivers:
@@ -327,71 +326,6 @@ class Robot(Job):
 
         for r in receivers:
             self.sendTextMsg("我的公主，1小时到了，起来去喝水吧 😘", r)
-
-    def print_command(self, msg):
-        text, user = command_common(msg)
-
-        if "@chatroom" in user:
-            self.sendTextMsg(room_menu, user)
-        else:
-            self.sendTextMsg(person_menu, user)
-
-    def manage_command(self, msg):
-        text, user = command_common(msg)
-
-        if text in base_manage_function_list:
-            self.LOG.info(f"【管理指令】{text}")
-            with open("enable.json", "w") as f:
-                # file_data = f.readline()
-                data_dict = {}
-                # if file_data:
-                #     self.LOG.info(f"【先读取文件】{file_data}")
-                #     data_dict = json.loads(file_data)
-                if text == "启用大橘":
-                    data_dict.update({user: 1})
-                    self.sendTextMsg("大橘开始提供服务 🐱", user)
-                elif text == "禁用大橘":
-                    data_dict.update({user: 0})
-                    self.sendTextMsg("大橘已经开始沉默 🐱🐱🐱", user)
-                elif text == "大橘状态":
-                    rst = self.enable_robot_dict.get(user)
-                    if rst == 1:
-                        self.sendTextMsg("大橘正在提供服务～🐱", user)
-                    elif rst == 0:
-                        self.sendTextMsg("大橘正在沉默中 🐱🐱🐱", user)
-                    if rst is None:
-                        # 如果还没初始化使能情况
-                        if "@chatroom" in user:
-                            self.sendTextMsg("大橘正在沉默中 🐱🐱🐱", user)  # 群默认不开启
-                        else:
-                            self.sendTextMsg("大橘正在提供服务～🐱", user)
-
-                self.enable_robot_dict.update(data_dict)
-                self.LOG.info(f"【当前缓存的机器人启用情况】{str(self.enable_robot_dict)}")
-
-                # # 重定文本指针位置，才能覆盖写入
-                # f.seek(0)
-                # f.truncate()
-                f.write(json.dumps(self.enable_robot_dict))
-                return True
-        return False
-
-    def enable_robot(self, msg):
-        text, user = command_common(msg)
-
-        rst = self.enable_robot_dict.get(user)
-        self.LOG.info(f"【是否启用了大橘】当前用户/群{user} 状态：{rst}. (1-启用 0-禁用)")
-        if rst == 1:
-            # 如果被启用，返回True
-            return True
-
-        if rst is None:
-            # 初始化时群默认不开启大橘，个人默认开启大橘
-            if "@chatroom" in user:
-                return False
-            else:
-                return True
-        return False
 
     def save_cache(self):
         with open("room/day_activity", "w") as f:
