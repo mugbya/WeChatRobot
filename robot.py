@@ -145,7 +145,9 @@ class Robot(Job):
 
         # 群聊消息
         if msg.from_group():
-            # print("群聊消息---")
+
+            self.record_count_msg(msg)  # 记录发言次数，方便统计活跃度
+
             # 如果在群里被 @
             if msg.roomid not in self.config.GROUPS:  # 不在配置的响应的群列表里，忽略
                 return
@@ -200,7 +202,6 @@ class Robot(Job):
                 try:
                     msg = wcf.get_msg()
                     self.LOG.info(msg)
-                    self.record_count_msg(msg)  # 记录发言次数，方便统计活跃度
 
                     flag = self.manage_command(msg)  # 首先执行指令
                     self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
@@ -303,9 +304,8 @@ class Robot(Job):
 
     def record_count_msg(self, msg):
         # key = msg.roomid + "-" + msg.sender
-        self.LOG.info(f"msg： {msg}")
         # self.LOG.info(f"msg属性： {dir(msg)}")
-        self.LOG.info(f"msg其他： sender: {msg.sender}")
+        self.LOG.info(f"msg其他：roomid: {msg.roomid}, sender: {msg.sender}")
         common_activity(msg, self.day_activity)
         common_activity(msg, self.month_activity)
         self.LOG.info(f"记录活跃度 日活: {self.day_activity}, 月活: {self.month_activity}")
@@ -323,7 +323,7 @@ class Robot(Job):
     def manage_command(self, msg):
         text, user = self.command_common(msg)
 
-        if text in base_function_list:
+        if text in base_manage_function_list:
             self.LOG.info(f"【管理指令】{text}")
             with open("enable.json", "w+") as f:
                 file_data = f.readlines()
