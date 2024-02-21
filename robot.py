@@ -184,7 +184,9 @@ class Robot(Job):
             flag = self.manage_command(msg)  # 首先执行管理指令
             self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
             if not flag:
-                self.processMsg(msg)
+                flag = self.command(msg)  # 执行一般执行
+                if not flag:
+                    self.processMsg(msg)
         except Exception as e:
             self.LOG.error(e)
         return 0
@@ -198,10 +200,11 @@ class Robot(Job):
                 try:
                     msg = wcf.get_msg()
                     self.LOG.info(msg)
+                    self.record_count_msg(msg)  # 记录发言次数，方便统计活跃度
+
                     flag = self.manage_command(msg)  # 首先执行指令
                     self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
                     if not flag:
-                        self.record_count_msg(msg)  # 记录发言次数，方便统计活跃度
                         flag = self.command(msg)  # 执行一般执行
                         if not flag:
                             self.processMsg(msg)
@@ -298,11 +301,10 @@ class Robot(Job):
         else:
             self.sendTextMsg(person_menu, user)
 
-
     def record_count_msg(self, msg):
         # key = msg.roomid + "-" + msg.sender
         self.LOG.info(f"msg： {msg}")
-        self.LOG.info(f"msg属性： {dir(msg)}")
+        # self.LOG.info(f"msg属性： {dir(msg)}")
         self.LOG.info(f"msg其他： sender: {msg.sender}")
         common_activity(msg, self.day_activity)
         common_activity(msg, self.month_activity)
