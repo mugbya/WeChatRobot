@@ -303,7 +303,7 @@ class Robot(Job):
         # key = msg.roomid + "-" + msg.sender
         self.LOG.info(f"msg： {msg}")
         self.LOG.info(f"msg属性： {dir(msg)}")
-        self.LOG.info(f"msg其他： sender: {msg.sender}, sender: {msg.wxid}")
+        self.LOG.info(f"msg其他： sender: {msg.sender}")
         common_activity(msg, self.day_activity)
         common_activity(msg, self.month_activity)
         self.LOG.info(f"记录活跃度 日活: {self.day_activity}, 月活: {self.month_activity}")
