@@ -6,7 +6,7 @@ import json
 love_function_list = ["喝水提醒"]
 
 
-base_manage_function_list = ["启用大橘", "禁用大橘", "大橘状态"]
+base_manage_function_list = ["启用大橘", "禁用大橘", "大橘状态", "^更新$"]
 admin_manage_function_list = ["启用大橘", "禁用大橘", "大橘状态", "小黑屋"]
 
 

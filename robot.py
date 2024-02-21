@@ -220,7 +220,7 @@ class Robot(Job):
         try:
             self.LOG.info(msg)  # 打印信息
             flag = self.baseFunc.manage_command(msg, self)  # 首先执行管理指令
-            self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
+            self.LOG.info(f"【管理指令】是否是管理执行指令 {flag}")
             if not flag:
                 self.processMsg(msg)
         except Exception as e:
@@ -240,7 +240,7 @@ class Robot(Job):
                     self.LOG.info(f"msg：roomid: {msg.roomid}, sender: {msg.sender}, content: {msg.content}")
 
                     flag = self.baseFunc.manage_command(msg, self)  # 首先执行管理指令
-                    self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
+                    self.LOG.info(f"【管理指令】是否是管理执行指令 {flag}")
                     if not flag:
                         self.processMsg(msg)
                     # self.processMsg(msg)

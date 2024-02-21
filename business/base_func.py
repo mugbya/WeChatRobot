@@ -17,10 +17,13 @@ class BaseFunc(object):
         self.LOG.info(f"room_id: {msg.roomid}, msg.roomid in room_data_dit: {msg.roomid in room_data_dit}, msg.sender in room_data_dit.get(msg.roomid): {msg.sender in room_data_dit.get(msg.roomid)}")
         self.LOG.info(f"判断结果: {(msg.roomid and msg.roomid in room_data_dit and msg.sender in room_data_dit.get(msg.roomid))}")
 
-        if not msg.roomid and (msg.roomid and msg.roomid in room_data_dit and msg.sender in room_data_dit.get(msg.roomid)):  # 有操作权限才能使用管理指令
+        if not msg.roomid or (msg.roomid and msg.roomid in room_data_dit and msg.sender in room_data_dit.get(msg.roomid)):  # 有操作权限才能使用管理指令
             if text in base_manage_function_list:
                 self.LOG.info(f"【管理指令】{text}")
 
+                if text == "^更新$":
+                    robot.config.reload()
+                    robot.sendTextMsg("配置已更新～🐱", user)
                 if text == "大橘状态":
                     rst = robot.enable_robot_dict.get(user)
                     if rst == 1:
