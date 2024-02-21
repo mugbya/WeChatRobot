@@ -49,7 +49,7 @@ class Robot(Job):
         tables = self.wcf.get_tables()
         self.LOG.info(f"【tables】{str(tables)}")
 
-        chatroom_members = self.wcf.get_chatroom_members()
+        chatroom_members = self.wcf.get_chatroom_members("43277207753@chatroom")
         self.LOG.info(f"【chatroom_members】{str(chatroom_members)}")
 
 
