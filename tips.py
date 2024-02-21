@@ -29,16 +29,29 @@ room_menu = '''
 '''
 
 
-def common_activity(msg, activity_dict):
-    room_data_dict = activity_dict.get(msg.roomid)
-    if not room_data_dict:
-        room_data_dict = {}
-    day_cnt = room_data_dict.get(msg.sender)
-    if not day_cnt:
-        day_cnt = 1
-    else:
-        day_cnt += 1
-    room_data_dict.update({msg.sender: day_cnt})
-    activity_dict.update({msg.roomid: room_data_dict})
+def command_common(msg):
+    text = msg.content
+    user = None
+    if msg.sender:
+        user = msg.sender
+    if msg.roomid:
+        user = msg.roomid
 
+    return text, user
 
+# a  = {"a": 1}
+#
+# with open("enable.json", "r+") as f:
+# # with open("enable.json", "w") as f:
+#     file_data = f.readline()
+#     print(file_data)
+#     data_dict = {}
+#     if file_data:
+#         print("---")
+#         data_dict = json.loads(file_data)
+#         data_dict.update({"aaa": 2})
+#         a.update(data_dict)
+#
+#     f.seek(0)
+#     f.truncate()
+#     f.write(json.dumps(a))

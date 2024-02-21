@@ -10,6 +10,8 @@ from threading import Thread
 from wcferry import Wcf, WxMsg
 
 from tips import *
+from business.room_func import RoomFunc
+from business.base_func import BaseFunc
 from base.func_bard import BardAssistant
 from base.func_chatglm import ChatGLM
 from base.func_chatgpt import ChatGPT
@@ -35,9 +37,13 @@ class Robot(Job):
         self.LOG = logging.getLogger("Robot")
         self.wxid = self.wcf.get_self_wxid()
         self.allContacts = self.getAllContacts()
-        self.enable_robot_dict = {} # 记录个人/群是否启用机器人
-        self.day_activity = {} # 记录群里的日活跃度
-        self.month_activity = {} # 记录群里的月活跃度
+
+        self.baseFunc = BaseFunc()
+        self.roomFunc = RoomFunc()
+
+        self.enable_robot_dict = {}  # 记录个人/群是否启用机器人
+        self.day_activity = {}  # 记录群里的日活跃度
+        self.month_activity = {}  # 记录群里的月活跃度
 
         if ChatType.is_in_chat_types(chat_type):
             if chat_type == ChatType.TIGER_BOT.value and TigerBot.value_check(self.config.TIGERBOT):
@@ -146,7 +152,8 @@ class Robot(Job):
         # 群聊消息
         if msg.from_group():
 
-            self.record_count_msg(msg)  # 记录发言次数，方便统计活跃度
+            self.roomFunc.record_count_msg(msg, self)  # 记录发言次数，方便统计活跃度
+            RoomFunc.welcome(msg, self)
 
             # 如果在群里被 @
             if msg.roomid not in self.config.GROUPS:  # 不在配置的响应的群列表里，忽略
@@ -201,7 +208,8 @@ class Robot(Job):
             while wcf.is_receiving_msg():
                 try:
                     msg = wcf.get_msg()
-                    self.LOG.info(msg)
+                    # self.LOG.info(msg)
+                    self.LOG.info(f"msg：roomid: {msg.roomid}, sender: {msg.sender}, content: {msg.content}")
 
                     flag = self.manage_command(msg)  # 首先执行指令
                     self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
@@ -277,6 +285,9 @@ class Robot(Job):
             self.allContacts[msg.sender] = nickName[0]
             self.sendTextMsg(f"Hi {nickName[0]}，我自动通过了你的好友请求。", msg.sender)
 
+
+
+
     def newsReport(self) -> None:
         receivers = self.config.NEWS
         if not receivers:
@@ -295,36 +306,22 @@ class Robot(Job):
             self.sendTextMsg("我的公主，1小时到了，起来去喝水吧 😘", r)
 
     def print_command(self, msg):
-        text, user = self.command_common(msg)
+        text, user = command_common(msg)
 
         if "@chatroom" in user:
             self.sendTextMsg(room_menu, user)
         else:
             self.sendTextMsg(person_menu, user)
 
-    def record_count_msg(self, msg):
-        self.LOG.info(f"msg其他：roomid: {msg.roomid}, sender: {msg.sender}")
-        common_activity(msg, self.day_activity)
-        common_activity(msg, self.month_activity)
-        self.LOG.info(f"记录活跃度 日活: {self.day_activity}, 月活: {self.month_activity}")
-
-    def command_common(self, msg):
-        text = msg.content
-        user = None
-        if msg.sender:
-            user = msg.sender
-        if msg.roomid:
-            user = msg.roomid
-
-        return text, user
 
     def manage_command(self, msg):
-        text, user = self.command_common(msg)
+        text, user = command_common(msg)
 
         if text in base_manage_function_list:
             self.LOG.info(f"【管理指令】{text}")
-            with open("enable.json", "w+") as f:
-                file_data = f.readlines()
+            with open("enable.json", "r+") as f:
+                file_data = f.readline()
+
                 data_dict = {}
                 if file_data:
                     self.LOG.info(f"【先读取文件】{file_data}")
@@ -350,12 +347,16 @@ class Robot(Job):
 
                 self.enable_robot_dict.update(data_dict)
                 self.LOG.info(f"【当前缓存的机器人启用情况】{str(self.enable_robot_dict)}")
+
+                # 重定文本指针位置，才能覆盖写入
+                f.seek(0)
+                f.truncate()
                 f.write(json.dumps(self.enable_robot_dict))
                 return True
         return False
 
     def command(self, msg):
-        text, user = self.command_common(msg)
+        text, user = command_common(msg)
 
         rst = self.enable_robot_dict.get(user)
         self.LOG.info(f"【是否启用了大橘】当前用户/群{user} 状态：{rst}. (1-启用 0-禁用)")
@@ -389,3 +390,10 @@ class Robot(Job):
                     # 执行到具体的一般指令，也返回True，便于后续不在执行
                     return True
         return False
+
+    def save_cache(self):
+        with open("room/day_activity", "w") as f:
+            f.write(json.dumps(self.day_activity))
+        with open("room/month_activity", "w") as f:
+            f.write(json.dumps(self.month_activity))
+

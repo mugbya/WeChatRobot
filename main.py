@@ -56,7 +56,10 @@ def main(chat_type: int):
     robot.onEveryTime("16:30", ReportReminder.remind, robot=robot)
 
     # 每小时发送活动/喝水提醒
-    robot.onEveryTime(["10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"], robot.drink)
+    robot.onEveryTime(["10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00"], robot.drink)
+
+    # 每5s中存一次相关变量
+    robot.onEverySeconds(5, robot.save_cache)
 
     # 让机器人一直跑
     robot.keepRunningAndBlockProcess()
