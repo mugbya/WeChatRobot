@@ -10,6 +10,10 @@ class RoomFunc(object):
 
     def __init__(self) -> None:
         self.LOG = logging.getLogger("Robot")
+        self.room_members = {}
+
+
+
 
     @staticmethod
     def welcome(msg, robot):
@@ -57,10 +61,13 @@ class RoomFunc(object):
 
     @staticmethod
     def common_rank_str(activity_dict, msg, text, robot):
+        chatroom_members = robot.wcf.get_chatroom_members(msg.roomid)
+
         room_dict = activity_dict.get(msg.roomid)
         data_list = sorted(room_dict.items(), key=lambda x: x[1], reverse=True)
         for item in data_list[0:9]:
-            text += f"🎈[{item[1]}]{item[0]}\n"
+            user_id = item[0]
+            text += f"🎈[{item[1]}]{chatroom_members.get(user_id)}\n"
             text += "==============="
         robot.sendTextMsg(text, msg.roomid)
 

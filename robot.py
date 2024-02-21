@@ -49,9 +49,8 @@ class Robot(Job):
         dbs = self.wcf.get_dbs()
         self.LOG.info(f"【dbs】{str(dbs)}")
 
-        chatroom_members = self.wcf.get_chatroom_members("43277207753@chatroom")
-        self.LOG.info(f"【chatroom_members】{str(chatroom_members)}")
-
+        tables = self.wcf.get_tables("ChatMsg.db")
+        self.LOG.info(f"【tables】{str(tables)}")
 
         with open("room/day_activity", "r") as f:
             line = f.readline()
