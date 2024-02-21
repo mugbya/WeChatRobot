@@ -181,7 +181,7 @@ class Robot(Job):
         # 群聊消息
         if msg.from_group():
 
-            self.roomFunc.record_count_msg(msg, self)  # 记录发言次数，方便统计活跃度
+            RoomFunc.record_count_msg(msg, self)  # 记录发言次数，方便统计活跃度
             RoomFunc.welcome(msg, self)
             RoomFunc.handler_command(msg, self)
 

@@ -18,13 +18,14 @@ class RoomFunc(object):
         if "邀请" in content and "加入了群聊" in content:
             robot.sendTextMsg("欢迎加入本群 [庆祝][庆祝][庆祝]", msg.roomid)
 
-    def record_count_msg(self, msg, robot):
+    @staticmethod
+    def record_count_msg(msg, robot):
         # self.LOG.info(f"msg其他：roomid: {msg.roomid}, sender: {msg.sender}")
         RoomFunc.common_activity(msg, robot.day_activity)
         RoomFunc.common_activity(msg, robot.month_activity)
         RoomFunc.common_activity(msg, robot.all_activity)
-        self.LOG.info(f"记录活跃度 日活: {robot.day_activity}")
-        self.LOG.info(f"记录活跃度 月活: {robot.month_activity}")
+        # self.LOG.info(f"记录活跃度 日活: {robot.day_activity}")
+        # self.LOG.info(f"记录活跃度 月活: {robot.month_activity}")
 
     @staticmethod
     def handler_command(msg, robot):
