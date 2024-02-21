@@ -235,7 +235,8 @@ class Robot(Job):
             while wcf.is_receiving_msg():
                 try:
                     msg = wcf.get_msg()
-                    # self.LOG.info(msg)
+                    if msg.roomid and msg.roomid not in self.config.GROUPS:
+                        return
                     self.LOG.info(f"msg：roomid: {msg.roomid}, sender: {msg.sender}, content: {msg.content}")
 
                     flag = self.baseFunc.manage_command(msg, self)  # 首先执行管理指令
