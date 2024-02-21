@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from base.func_news import News
 import json
 
 love_function_list = ["喝水提醒"]
@@ -12,7 +11,7 @@ admin_manage_function_list = ["启用大橘", "禁用大橘", "大橘状态", "�
 
 
 base_function_list = ["今日新闻", "天气"]
-rome_function_list = ["今日新闻", "天气", "签到", "抽签", "抽奖", "打劫", "开宝箱", "排行榜", "礼物", "日活跃度", "月活跃度"]
+rome_function_list = ["今日新闻", "天气", "签到", "抽签", "抽奖", "打劫", "开宝箱", "排行榜", "礼物"]
 
 
 person_menu = """启用大橘 | 禁用大橘 | 大橘状态"""
@@ -28,6 +27,12 @@ room_menu = '''
 📳实时疫情🔥查有效期🕓
 '''
 
+activity_rank = '''
+====排行榜指令====
+🎈活跃总排行
+🎈活跃月排行
+🎈活跃日排行
+'''
 
 def command_common(msg):
     text = msg.content
@@ -55,3 +60,14 @@ def command_common(msg):
 #     f.seek(0)
 #     f.truncate()
 #     f.write(json.dumps(a))
+
+# d  = {"a": 1, "b": 4}
+#
+# a = sorted(d.items(), key=lambda x: x[1], reverse=True)
+# print(a)
+# rst = "====活跃日排行====\n"
+# for item in a[0:9]:
+#     rst += f"🎈[{item[1]}]{item[0]}\n"
+# rst += "==============="
+#
+# print(rst)

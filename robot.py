@@ -44,6 +44,27 @@ class Robot(Job):
         self.enable_robot_dict = {}  # 记录个人/群是否启用机器人
         self.day_activity = {}  # 记录群里的日活跃度
         self.month_activity = {}  # 记录群里的月活跃度
+        self.all_activity = {}  # 记录群里的总活跃度
+
+        with open("room/day_activity", "r") as f:
+            line = f.readline()
+            if line:
+                self.day_activity = json.loads(line)
+        with open("room/month_activity", "r") as f:
+            line = f.readline()
+            if line:
+                self.month_activity = json.loads(line)
+        with open("room/all_activity", "r") as f:
+            line = f.readline()
+            if line:
+                self.all_activity = json.loads(line)
+        with open("enable.json", "r") as f:
+            line = f.readline()
+            if line:
+                self.enable_robot_dict = json.loads(line)
+
+        self.LOG.info(f"【初始化缓存的机器人启用情况】{str(self.enable_robot_dict)}")
+        self.LOG.info(f"【初始化缓存日活跃度】{str(self.day_activity)}")
 
         if ChatType.is_in_chat_types(chat_type):
             if chat_type == ChatType.TIGER_BOT.value and TigerBot.value_check(self.config.TIGERBOT):
@@ -91,7 +112,9 @@ class Robot(Job):
         :param msg: 微信消息结构
         :return: 处理状态，`True` 成功，`False` 失败
         """
-        return self.toChitchat(msg)
+        if self.enable_robot():
+            return self.toChitchat(msg)
+        return False
 
     def toChengyu(self, msg: WxMsg) -> bool:
         """
@@ -154,6 +177,7 @@ class Robot(Job):
 
             self.roomFunc.record_count_msg(msg, self)  # 记录发言次数，方便统计活跃度
             RoomFunc.welcome(msg, self)
+            RoomFunc.handler_command(msg, self)
 
             # 如果在群里被 @
             if msg.roomid not in self.config.GROUPS:  # 不在配置的响应的群列表里，忽略
@@ -183,9 +207,8 @@ class Robot(Job):
                     self.config.reload()
                     self.LOG.info("已更新")
             else:
-                # flag = tips(msg, self)
-                # if not flag:
-                self.toChitchat(msg)  # 闲聊
+                if self.enable_robot():
+                    self.toChitchat(msg)  # 闲聊
 
     def onMsg(self, msg: WxMsg) -> int:
         try:
@@ -193,9 +216,7 @@ class Robot(Job):
             flag = self.manage_command(msg)  # 首先执行管理指令
             self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
             if not flag:
-                flag = self.command(msg)  # 执行一般执行
-                if not flag:
-                    self.processMsg(msg)
+                self.processMsg(msg)
         except Exception as e:
             self.LOG.error(e)
         return 0
@@ -214,9 +235,7 @@ class Robot(Job):
                     flag = self.manage_command(msg)  # 首先执行指令
                     self.LOG.info(f"【管理指令】是否管理执行指令 {flag}")
                     if not flag:
-                        flag = self.command(msg)  # 执行一般执行
-                        if not flag:
-                            self.processMsg(msg)
+                        self.processMsg(msg)
                     # self.processMsg(msg)
                 except Empty:
                     continue  # Empty message
@@ -286,8 +305,6 @@ class Robot(Job):
             self.sendTextMsg(f"Hi {nickName[0]}，我自动通过了你的好友请求。", msg.sender)
 
 
-
-
     def newsReport(self) -> None:
         receivers = self.config.NEWS
         if not receivers:
@@ -313,19 +330,17 @@ class Robot(Job):
         else:
             self.sendTextMsg(person_menu, user)
 
-
     def manage_command(self, msg):
         text, user = command_common(msg)
 
         if text in base_manage_function_list:
             self.LOG.info(f"【管理指令】{text}")
-            with open("enable.json", "r+") as f:
-                file_data = f.readline()
-
+            with open("enable.json", "w") as f:
+                # file_data = f.readline()
                 data_dict = {}
-                if file_data:
-                    self.LOG.info(f"【先读取文件】{file_data}")
-                    data_dict = json.loads(file_data)
+                # if file_data:
+                #     self.LOG.info(f"【先读取文件】{file_data}")
+                #     data_dict = json.loads(file_data)
                 if text == "启用大橘":
                     data_dict.update({user: 1})
                     self.sendTextMsg("大橘开始提供服务 🐱", user)
@@ -348,47 +363,28 @@ class Robot(Job):
                 self.enable_robot_dict.update(data_dict)
                 self.LOG.info(f"【当前缓存的机器人启用情况】{str(self.enable_robot_dict)}")
 
-                # 重定文本指针位置，才能覆盖写入
-                f.seek(0)
-                f.truncate()
+                # # 重定文本指针位置，才能覆盖写入
+                # f.seek(0)
+                # f.truncate()
                 f.write(json.dumps(self.enable_robot_dict))
                 return True
         return False
 
-    def command(self, msg):
+    def enable_robot(self, msg):
         text, user = command_common(msg)
 
         rst = self.enable_robot_dict.get(user)
         self.LOG.info(f"【是否启用了大橘】当前用户/群{user} 状态：{rst}. (1-启用 0-禁用)")
-        if rst == 0:
-            # 如果被禁用，返回True
+        if rst == 1:
+            # 如果被启用，返回True
             return True
 
         if rst is None:
             # 初始化时群默认不开启大橘，个人默认开启大橘
             if "@chatroom" in user:
+                return False
+            else:
                 return True
-
-        # 如果是群，则匹配群指令功能
-        if "@chatroom" in user:
-            if text in rome_function_list:
-                self.LOG.info(f"【普通指令】{text}")
-                if text == "今日新闻":
-                    news = News().get_important_news()
-                    self.sendTextMsg(news, user)
-                    # 执行到具体的一般指令，也返回True，便于后续不在执行
-                    return True
-                if text == "签到":
-                    pass
-
-        else:
-            if text in base_function_list:
-                self.LOG.info(f"【普通指令】{text}")
-                if text == "今日新闻":
-                    news = News().get_important_news()
-                    self.sendTextMsg(news, user)
-                    # 执行到具体的一般指令，也返回True，便于后续不在执行
-                    return True
         return False
 
     def save_cache(self):
@@ -396,4 +392,5 @@ class Robot(Job):
             f.write(json.dumps(self.day_activity))
         with open("room/month_activity", "w") as f:
             f.write(json.dumps(self.month_activity))
-
+        with open("room/all_activity", "w") as f:
+            f.write(json.dumps(self.all_activity))
