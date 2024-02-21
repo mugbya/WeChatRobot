@@ -14,42 +14,39 @@ class BaseFunc(object):
     def manage_command(self, msg, robot):
         text, user = BaseFunc.command_common(msg)
 
+        self.LOG.info(f"room_id: {msg.roomid}, msg.roomid in room_data_dit: {msg.roomid in room_data_dit}, msg.sender in room_data_dit.get(msg.roomid): {msg.sender in room_data_dit.get(msg.roomid)}")
+        self.LOG.info(f"判断结果: {(msg.roomid and msg.roomid in room_data_dit and msg.sender in room_data_dit.get(msg.roomid))}")
+
         if not msg.roomid and (msg.roomid and msg.roomid in room_data_dit and msg.sender in room_data_dit.get(msg.roomid)):  # 有操作权限才能使用管理指令
             if text in base_manage_function_list:
                 self.LOG.info(f"【管理指令】{text}")
-                with open("enable.json", "w") as f:
-                    # file_data = f.readline()
-                    data_dict = {}
-                    # if file_data:
-                    #     self.LOG.info(f"【先读取文件】{file_data}")
-                    #     data_dict = json.loads(file_data)
-                    if text == "启用大橘":
-                        data_dict.update({user: 1})
-                        robot.sendTextMsg("大橘开始提供服务 🐱", user)
-                    elif text == "禁用大橘":
-                        data_dict.update({user: 0})
-                        robot.sendTextMsg("大橘已经开始沉默 🐱🐱🐱", user)
-                    elif text == "大橘状态":
-                        rst = robot.enable_robot_dict.get(user)
-                        if rst == 1:
+
+                if text == "大橘状态":
+                    rst = robot.enable_robot_dict.get(user)
+                    if rst == 1:
+                        robot.sendTextMsg("大橘正在提供服务～🐱", user)
+                    elif rst == 0:
+                        robot.sendTextMsg("大橘正在沉默中 🐱🐱🐱", user)
+                    if rst is None:
+                        # 如果还没初始化使能情况
+                        if "@chatroom" in user:
+                            robot.sendTextMsg("大橘正在沉默中 🐱🐱🐱", user)  # 群默认不开启
+                        else:
                             robot.sendTextMsg("大橘正在提供服务～🐱", user)
-                        elif rst == 0:
-                            robot.sendTextMsg("大橘正在沉默中 🐱🐱🐱", user)
-                        if rst is None:
-                            # 如果还没初始化使能情况
-                            if "@chatroom" in user:
-                                robot.sendTextMsg("大橘正在沉默中 🐱🐱🐱", user)  # 群默认不开启
-                            else:
-                                robot.sendTextMsg("大橘正在提供服务～🐱", user)
+                else:
+                    with open("enable.json", "w") as f:
+                        data_dict = {}
+                        if text == "启用大橘":
+                            data_dict.update({user: 1})
+                            robot.sendTextMsg("大橘开始提供服务 🐱", user)
+                        elif text == "禁用大橘":
+                            data_dict.update({user: 0})
+                            robot.sendTextMsg("大橘已经开始沉默 🐱🐱🐱", user)
 
-                    robot.enable_robot_dict.update(data_dict)
-                    self.LOG.info(f"【当前缓存的机器人启用情况】{str(robot.enable_robot_dict)}")
-
-                    # # 重定文本指针位置，才能覆盖写入
-                    # f.seek(0)
-                    # f.truncate()
-                    f.write(json.dumps(robot.enable_robot_dict))
-                    return True
+                        robot.enable_robot_dict.update(data_dict)
+                        f.write(json.dumps(robot.enable_robot_dict))
+                self.LOG.info(f"【当前缓存的机器人启用情况】{str(robot.enable_robot_dict)}")
+                return True
         return False
 
     def enable_robot(self, msg, robot):
