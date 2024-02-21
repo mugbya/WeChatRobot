@@ -118,7 +118,7 @@ class Robot(Job):
         :param msg: 微信消息结构
         :return: 处理状态，`True` 成功，`False` 失败
         """
-        if self.enable_robot(msg):
+        if self.baseFunc.enable_robot(msg, self):
             return self.toChitchat(msg)
         return False
 
