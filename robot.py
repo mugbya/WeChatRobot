@@ -303,8 +303,6 @@ class Robot(Job):
             self.sendTextMsg(person_menu, user)
 
     def record_count_msg(self, msg):
-        # key = msg.roomid + "-" + msg.sender
-        # self.LOG.info(f"msg属性： {dir(msg)}")
         self.LOG.info(f"msg其他：roomid: {msg.roomid}, sender: {msg.sender}")
         common_activity(msg, self.day_activity)
         common_activity(msg, self.month_activity)

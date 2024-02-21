@@ -31,8 +31,6 @@ room_menu = '''
 
 def common_activity(msg, activity_dict):
     room_data_dict = activity_dict.get(msg.roomid)
-    print("common_activity--")
-    print(room_data_dict)
     if not room_data_dict:
         room_data_dict = {}
     day_cnt = room_data_dict.get(msg.sender)
@@ -41,6 +39,6 @@ def common_activity(msg, activity_dict):
     else:
         day_cnt += 1
     room_data_dict.update({msg.sender: day_cnt})
-    activity_dict.update(room_data_dict)
+    activity_dict.update({msg.roomid: room_data_dict})
 
 
