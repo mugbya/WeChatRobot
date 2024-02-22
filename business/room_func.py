@@ -67,7 +67,9 @@ class RoomFunc(object):
         data_list = sorted(room_dict.items(), key=lambda x: x[1], reverse=True)
         for item in data_list[0:9]:
             user_id = item[0]
-            text += f"🎈[{item[1]}]{chatroom_members.get(user_id)}\n"
+            user_name = chatroom_members.get(user_id)
+            if user_name:
+                text += f"🎈[{item[1]}]{user_name}\n"
         text += "==============="
         robot.sendTextMsg(text, msg.roomid)
 
