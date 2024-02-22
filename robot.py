@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import traceback
 import logging
 import re
 import time
@@ -247,6 +247,7 @@ class Robot(Job):
                 except Empty:
                     continue  # Empty message
                 except Exception as e:
+                    traceback.print_exc()
                     self.LOG.error(f"Receiving message error: {e}")
 
         self.wcf.enable_receiving_msg()
