@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import re
 import logging
 from tips import *
 from base.func_news import News
@@ -16,7 +16,11 @@ class RoomFunc(object):
     def welcome(msg, robot):
         content = msg.content
         if "邀请" in content and "加入了群聊" in content:
-            robot.sendTextMsg("欢迎加入本群 [庆祝][庆祝][庆祝]", msg.roomid)
+            nick_name = re.findall(r'邀请"(.*)"加入了群聊', content)
+            if nick_name:
+                robot.sendTextMsg(f"欢迎 {nick_name[0]} 加入本群 [庆祝][庆祝][庆祝]", msg.roomid)
+            else:
+                robot.sendTextMsg(f"欢迎加入本群 [庆祝][庆祝][庆祝]", msg.roomid)
 
     @staticmethod
     def record_count_msg(msg, robot):
