@@ -334,6 +334,9 @@ class Robot(Job):
             self.sendTextMsg("我的公主，1小时到了，起来去喝水吧 😘", r)
 
     def save_cache(self):
+        _is_receiving_msg = self.wcf.is_receiving_msg()
+        self.LOG.info(f"【是否已启动接收消息功能】{_is_receiving_msg}")
+
         with open("room/day_activity", "w") as f:
             f.write(json.dumps(self.day_activity))
         with open("room/month_activity", "w") as f:
