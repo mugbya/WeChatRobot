@@ -14,8 +14,8 @@ class BaseFunc(object):
     def manage_command(self, msg, robot):
         text, user = BaseFunc.command_common(msg)
 
-        self.LOG.info(f"room_id: {msg.roomid}, msg.roomid in room_data_dit: {msg.roomid in room_data_dit}, msg.sender in room_data_dit.get(msg.roomid): {msg.sender in room_data_dit.get(msg.roomid)}")
-        self.LOG.info(f"判断结果: {(msg.roomid and msg.roomid in room_data_dit and msg.sender in room_data_dit.get(msg.roomid))}")
+        # self.LOG.info(f"room_id: {msg.roomid}, msg.roomid in room_data_dit: {msg.roomid in room_data_dit}, msg.sender in room_data_dit.get(msg.roomid): {msg.sender in room_data_dit.get(msg.roomid)}")
+        # self.LOG.info(f"判断结果: {(msg.roomid and msg.roomid in room_data_dit and msg.sender in room_data_dit.get(msg.roomid))}")
 
         if not msg.roomid or (msg.roomid and msg.roomid in room_data_dit and msg.sender in room_data_dit.get(msg.roomid)):  # 有操作权限才能使用管理指令
             if text in base_manage_function_list:
@@ -78,6 +78,6 @@ class BaseFunc(object):
         if msg.roomid:
             user = msg.roomid
 
-        print(f"text:{text}, user: {user}")
+        print(f"【command_common】text:{text}, user: {user}")
         return text, user
 
