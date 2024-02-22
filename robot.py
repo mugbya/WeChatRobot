@@ -184,7 +184,6 @@ class Robot(Job):
         # 群聊消息
         if msg.from_group():
 
-
             RoomFunc.record_count_msg(msg, self)  # 记录发言次数，方便统计活跃度
             RoomFunc.welcome(msg, self)
             RoomFunc.handler_command(msg, self)
@@ -340,8 +339,8 @@ class Robot(Job):
             self.sendTextMsg("我的公主，1小时到了，起来去喝水吧 😘", r)
 
     def save_cache(self):
-        _is_receiving_msg = self.wcf.is_receiving_msg()
-        self.LOG.info(f"【是否已启动接收消息功能】{_is_receiving_msg}")
+        # _is_receiving_msg = self.wcf.is_receiving_msg()
+        # self.LOG.info(f"【是否已启动接收消息功能】{_is_receiving_msg}")
 
         with open("room/day_activity", "w") as f:
             f.write(json.dumps(self.day_activity))
