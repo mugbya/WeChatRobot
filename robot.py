@@ -304,7 +304,7 @@ class Robot(Job):
             scene = int(xml.attrib["scene"])
             self.wcf.accept_new_friend(v3, v4, scene)
 
-            if "使用" == content:
+            if "试用" == content:
                 self.wcf.add_chatroom_members("48193485317@chatroom", fromusername)
         except Exception as e:
             self.LOG.error(f"同意好友出错：{e}")
