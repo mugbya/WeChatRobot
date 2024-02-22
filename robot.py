@@ -178,9 +178,6 @@ class Robot(Job):
         self.sendTextMsg(content, receivers, msg.sender)
         """
 
-        if BaseFunc.print_menu(msg, self):
-            return
-
         # 群聊消息
         if msg.from_group():
 
@@ -217,7 +214,8 @@ class Robot(Job):
                     self.LOG.info("已更新")
             else:
                 if self.baseFunc.enable_robot(msg, self):
-                    self.toChitchat(msg)  # 闲聊
+                    if not BaseFunc.print_menu(msg, self):
+                        self.toChitchat(msg)  # 闲聊
 
     def onMsg(self, msg: WxMsg) -> int:
         try:
