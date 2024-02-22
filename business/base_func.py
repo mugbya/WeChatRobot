@@ -78,6 +78,6 @@ class BaseFunc(object):
         if msg.roomid:
             user = msg.roomid
 
-        print(f"【command_common】text:{text}, user: {user}")
+        # print(f"【command_common】text:{text}, user: {user}")
         return text, user
 
