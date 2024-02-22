@@ -46,6 +46,8 @@ class Robot(Job):
         self.month_activity = {}  # 记录群里的月活跃度
         self.all_activity = {}  # 记录群里的总活跃度
 
+        self.all_room = {}  # 记录所有的群
+
         # dbs = self.wcf.get_dbs()
         # self.LOG.info(f"【dbs】{str(dbs)}")
         #
@@ -64,6 +66,12 @@ class Robot(Job):
             line = f.readline()
             if line:
                 self.all_activity = json.loads(line)
+
+        with open("room/all_room.json", "r") as f:
+            line = f.readline()
+            if line:
+                self.all_room = json.loads(line)
+
         with open("enable.json", "r") as f:
             line = f.readline()
             if line:
@@ -238,6 +246,9 @@ class Robot(Job):
                 try:
                     msg = wcf.get_msg()
                     if msg.roomid and msg.roomid not in self.config.GROUPS:
+                        self.all_room.update({msg.roomid: "未知"})
+                        with open("room/all_room.json", "w") as f:
+                            f.write(json.dumps(self.all_room))
                         return
                     self.LOG.info(f"msg：roomid: {msg.roomid}, sender: {msg.sender}, content: {msg.content}")
 
