@@ -299,14 +299,16 @@ class Robot(Job):
             xml = ET.fromstring(msg.content)
             v3 = xml.attrib["encryptusername"]
             v4 = xml.attrib["ticket"]
+            fromusername = xml.attrib["fromusername"]
+            content = xml.attrib["content"]
             scene = int(xml.attrib["scene"])
             self.wcf.accept_new_friend(v3, v4, scene)
 
-            self.LOG.info("【接受好友申请，并自动拉进群】")
-            self.LOG.info(f"msg: {msg.content}")
-            self.wcf.invite_chatroom_members("48193485317@chatroom", msg.sender)
+            self.LOG.info("【接受好友申请，并自动拉进群】发送的内容: {content}")
+            # self.LOG.info(f"msg: {msg.content}")
+            # self.wcf.invite_chatroom_members("48193485317@chatroom", fromusername)
             self.LOG.info(f"下面是添加")
-            self.wcf.add_chatroom_members("48193485317@chatroom", msg.sender)
+            self.wcf.add_chatroom_members("48193485317@chatroom", fromusername)
         except Exception as e:
             self.LOG.error(f"同意好友出错：{e}")
 
