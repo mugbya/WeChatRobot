@@ -30,7 +30,7 @@ class RoomFunc(object):
     @staticmethod
     def handler_command(msg, robot):
         content = msg.content
-        if "功能列表" == content:
+        if content in ["功能", "功能列表", "大橘功能"]:
             robot.sendTextMsg(room_menu, msg.roomid)
         if "签到" == content:
             pass

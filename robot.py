@@ -178,8 +178,12 @@ class Robot(Job):
         self.sendTextMsg(content, receivers, msg.sender)
         """
 
+        if BaseFunc.print_menu(msg, self):
+            return
+
         # 群聊消息
         if msg.from_group():
+
 
             RoomFunc.record_count_msg(msg, self)  # 记录发言次数，方便统计活跃度
             RoomFunc.welcome(msg, self)
@@ -233,6 +237,7 @@ class Robot(Job):
     def enableReceivingMsg(self) -> None:
         def innerProcessMsg(wcf: Wcf):
             while wcf.is_receiving_msg():
+                self.LOG.error(f"【等待消息】************************")
                 try:
                     msg = wcf.get_msg()
                     if msg.roomid and msg.roomid not in self.config.GROUPS:
@@ -245,6 +250,7 @@ class Robot(Job):
                         self.processMsg(msg)
                     # self.processMsg(msg)
                 except Empty:
+                    self.LOG.error(f"【空消息】！！！！！！！！！！！！！！ ")
                     continue  # Empty message
                 except Exception as e:
                     traceback.print_exc()

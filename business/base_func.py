@@ -11,6 +11,14 @@ class BaseFunc(object):
     def __init__(self) -> None:
         self.LOG = logging.getLogger("Robot")
 
+    @staticmethod
+    def print_menu(msg, robot):
+        text, user = BaseFunc.command_common(msg)
+        if text in ["功能", "功能列表", "大橘功能"]:
+            robot.sendTextMsg(person_menu, user)
+            return True
+        return False
+
     def manage_command(self, msg, robot):
         text, user = BaseFunc.command_common(msg)
 
