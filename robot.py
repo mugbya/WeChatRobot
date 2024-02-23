@@ -245,7 +245,7 @@ class Robot(Job):
     def enableReceivingMsg(self) -> None:
         def innerProcessMsg(wcf: Wcf):
             while wcf.is_receiving_msg():
-                # self.LOG.error(f"【等待消息】************************")
+                print(f"【等待消息】************************")
                 try:
                     msg = wcf.get_msg()
                     if msg.roomid and msg.roomid not in self.config.GROUPS:
@@ -261,7 +261,7 @@ class Robot(Job):
                         self.processMsg(msg)
                     # self.processMsg(msg)
                 except Empty:
-                    # self.LOG.error(f"【空消息】！！！！！！！！！！！！！！ ")
+                    print(f"【空消息】！！！！！！！！！！！！！！ ")
                     continue  # Empty message
                 except Exception as e:
                     traceback.print_exc()
@@ -351,8 +351,8 @@ class Robot(Job):
             self.sendTextMsg("我的公主，1小时到了，起来去喝水吧 😘", r)
 
     def save_cache(self):
-        _is_receiving_msg = self.wcf.is_receiving_msg()
-        self.LOG.info(f"【是否已启动接收消息功能】{_is_receiving_msg}")
+        # _is_receiving_msg = self.wcf.is_receiving_msg()
+        # self.LOG.info(f"【是否已启动接收消息功能】{_is_receiving_msg}")
 
         with open("room/day_activity", "w") as f:
             f.write(json.dumps(self.day_activity))
