@@ -20,5 +20,6 @@ class PersonFunc(object):
             return True
         if text in ["试用", "使用", "使用大橘"]:
             robot.wcf.add_chatroom_members(room_data.test_room_id, msg.sender)
+            return True
 
         return False
