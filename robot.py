@@ -3,6 +3,7 @@ import traceback
 import logging
 import re
 import time
+from datetime import datetime
 import xml.etree.ElementTree as ET
 from queue import Empty
 from threading import Thread
@@ -245,7 +246,8 @@ class Robot(Job):
     def enableReceivingMsg(self) -> None:
         def innerProcessMsg(wcf: Wcf):
             while wcf.is_receiving_msg():
-                print(f"【等待消息】************************")
+                now_time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                print(f"{now_time}【等待消息】************************")
                 try:
                     msg = wcf.get_msg()
                     if msg.roomid and msg.roomid not in self.config.GROUPS:
@@ -261,7 +263,8 @@ class Robot(Job):
                         self.processMsg(msg)
                     # self.processMsg(msg)
                 except Empty:
-                    print(f"【空消息】！！！！！！！！！！！！！！ ")
+                    now_time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                    print(f"{now_time}【空消息】！！！！！！！！！！！！！！ ")
                     continue  # Empty message
                 except Exception as e:
                     traceback.print_exc()
