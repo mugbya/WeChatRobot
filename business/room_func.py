@@ -43,10 +43,11 @@ class RoomFunc(object):
             tmp_data_dict = {value: key for key, value in data_dict.items()}
 
             nick_name = re.findall(r'@"(.*)" ', content)
-            user_id = tmp_data_dict.get(nick_name[0])
-
-            RoomFunc.LOG.info(f"【踢出】nick_name: {nick_name}, user_id: {user_id}")
-            robot.wcf.del_chatroom_members(msg.roomid, user_id)
+            RoomFunc.LOG.info(f"【踢出】nick_name: {nick_name}")
+            if nick_name:
+                user_id = tmp_data_dict.get(nick_name[0])
+                RoomFunc.LOG.info(f"【踢出】nick_name: {nick_name}, user_id: {user_id}")
+                robot.wcf.del_chatroom_members(msg.roomid, user_id)
 
     @staticmethod
     def handler_command(msg, robot):
