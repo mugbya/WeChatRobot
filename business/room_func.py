@@ -36,8 +36,8 @@ class RoomFunc(object):
     @staticmethod
     def handler_manage_command(msg, robot):
         content = msg.content
-        if content in ["踢", "踢掉", "踢走"]:
-            # print(f"【handler_manage_command】msg: {msg}")
+        if "踢" in content and "@" in content:
+            RoomFunc.LOG.info(f"【handler_manage_command】msg: {msg}")
 
             data_dict = RoomFunc.get_room_data_dict(msg, robot)
             tmp_data_dict = {value: key for key, value in data_dict.items()}
