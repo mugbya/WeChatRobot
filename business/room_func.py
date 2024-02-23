@@ -32,6 +32,13 @@ class RoomFunc(object):
         # self.LOG.info(f"记录活跃度 月活: {robot.month_activity}")
 
     @staticmethod
+    def handler_manage_command(msg, robot):
+        content = msg.content
+        if content in ["踢", "踢掉", "踢走"]:
+            print(f"【handler_manage_command】msg: {msg}")
+            # robot.wcf.del_chatroom_members(msg.roomid, )
+
+    @staticmethod
     def handler_command(msg, robot):
         content = msg.content
         if content in ["功能", "功能列表", "大橘功能"]:

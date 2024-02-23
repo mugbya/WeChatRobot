@@ -9,9 +9,11 @@ from threading import Thread
 
 from wcferry import Wcf, WxMsg
 
+from business import room_data
 from tips import *
 from business.room_func import RoomFunc
 from business.base_func import BaseFunc
+from business.person_func import PersonFunc
 from base.func_bard import BardAssistant
 from base.func_chatglm import ChatGLM
 from base.func_chatgpt import ChatGPT
@@ -192,6 +194,7 @@ class Robot(Job):
             RoomFunc.record_count_msg(msg, self)  # 记录发言次数，方便统计活跃度
             RoomFunc.welcome(msg, self)
             RoomFunc.handler_command(msg, self)
+            RoomFunc.handler_manage_command(msg, self)
 
             # 如果在群里被 @
             if msg.roomid not in self.config.GROUPS:  # 不在配置的响应的群列表里，忽略
@@ -222,7 +225,7 @@ class Robot(Job):
                     self.LOG.info("已更新")
             else:
                 if self.baseFunc.enable_robot(msg, self):
-                    if not BaseFunc.print_menu(msg, self):
+                    if not PersonFunc.handler_command(msg, self):
                         self.toChitchat(msg)  # 闲聊
 
     def onMsg(self, msg: WxMsg) -> int:
@@ -319,7 +322,7 @@ class Robot(Job):
             self.wcf.accept_new_friend(v3, v4, scene)
 
             if "试用" == content:
-                self.wcf.add_chatroom_members("48193485317@chatroom", fromusername)
+                self.wcf.add_chatroom_members(room_data.test_room_id, fromusername)
         except Exception as e:
             self.LOG.error(f"同意好友出错：{e}")
 

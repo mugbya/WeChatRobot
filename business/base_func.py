@@ -11,17 +11,8 @@ class BaseFunc(object):
     def __init__(self) -> None:
         self.LOG = logging.getLogger("Robot")
 
-    @staticmethod
-    def print_menu(msg, robot):
-        text, user = BaseFunc.command_common(msg)
-        if text in ["功能", "功能列表", "大橘功能"]:
-            robot.sendTextMsg(person_menu, user)
-            return True
-        return False
-
     def manage_command(self, msg, robot):
         text, user = BaseFunc.command_common(msg)
-
         # self.LOG.info(f"room_id: {msg.roomid}, msg.roomid in room_data_dit: {msg.roomid in room_data_dit}, msg.sender in room_data_dit.get(msg.roomid): {msg.sender in room_data_dit.get(msg.roomid)}")
         # self.LOG.info(f"判断结果: {(msg.roomid and msg.roomid in room_data_dit and msg.sender in room_data_dit.get(msg.roomid))}")
 
