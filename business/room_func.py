@@ -37,12 +37,12 @@ class RoomFunc(object):
     def handler_manage_command(msg, robot):
         content = msg.content
         if "踢" in content and "@" in content:
-            RoomFunc.LOG.info(f"【handler_manage_command】msg: {msg}")
+            # RoomFunc.LOG.info(f"【handler_manage_command】msg: {msg}")
 
             data_dict = RoomFunc.get_room_data_dict(msg, robot)
             tmp_data_dict = {value: key for key, value in data_dict.items()}
 
-            nick_name = re.findall(r'@"(.*)" ', content)
+            nick_name = re.findall(r'@(.*)', content)
             RoomFunc.LOG.info(f"【踢出】nick_name: {nick_name}")
             if nick_name:
                 user_id = tmp_data_dict.get(nick_name[0])

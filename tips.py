@@ -88,4 +88,14 @@ activity_rank = '''
 # rst += "==============="
 #
 # print(rst)
+#
+# import re
+# txtaa = "踢 @越凌兮"
+# aaaaa = re.findall(r'@(.*)', txtaa)
+# print(aaaaa)
+
+# content = '你邀请"洛"加入了群聊'
+# nick_name = re.findall(r'邀请"(.*)"加入了群聊', content)
+# if nick_name:
+#     print(nick_name)
 
