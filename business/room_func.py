@@ -8,9 +8,11 @@ from base.func_news import News
 
 class RoomFunc(object):
 
+    room_members_dict = {}  # 群的成员ID跟成员昵称
+    LOG = logging.getLogger("Robot")
+
     def __init__(self) -> None:
-        self.LOG = logging.getLogger("Robot")
-        # self.room_members = {}
+        pass
 
     @staticmethod
     def welcome(msg, robot):
@@ -36,7 +38,15 @@ class RoomFunc(object):
         content = msg.content
         if content in ["踢", "踢掉", "踢走"]:
             print(f"【handler_manage_command】msg: {msg}")
-            # robot.wcf.del_chatroom_members(msg.roomid, )
+
+            data_dict = RoomFunc.get_room_data_dict(msg, robot)
+            tmp_data_dict = {value: key for key, value in data_dict.items()}
+
+            nick_name = re.findall(r'@"(.*)" ', content)
+            user_id = tmp_data_dict.get(nick_name)
+
+            RoomFunc.LOG.info(f"【踢出】nick_name: {nick_name}, user_id: {user_id}")
+            robot.wcf.del_chatroom_members(msg.roomid, user_id)
 
     @staticmethod
     def handler_command(msg, robot):
@@ -71,14 +81,22 @@ class RoomFunc(object):
             robot.sendTextMsg(news, msg.roomid)
 
     @staticmethod
+    def get_room_data_dict(msg, robot):
+        data_dict = RoomFunc.room_members_dict.get(msg.roomid)
+        if not data_dict:
+            data_dict = robot.wcf.get_chatroom_members(msg.roomid)
+            RoomFunc.room_members_dict.update({msg.roomid: data_dict})
+        return data_dict
+
+    @staticmethod
     def common_rank_str(activity_dict, msg, text, robot):
-        chatroom_members = robot.wcf.get_chatroom_members(msg.roomid)
+        data_dict = RoomFunc.get_room_data_dict(msg, robot)
 
         room_dict = activity_dict.get(msg.roomid)
         data_list = sorted(room_dict.items(), key=lambda x: x[1], reverse=True)
         for item in data_list[0:9]:
             user_id = item[0]
-            user_name = chatroom_members.get(user_id)
+            user_name = data_dict.get(user_id)
             if user_name:
                 text += f"🎈[{item[1]}]{user_name}\n"
         text += "==============="

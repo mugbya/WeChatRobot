@@ -89,5 +89,3 @@ activity_rank = '''
 #
 # print(rst)
 
-
-
