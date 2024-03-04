@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import asyncio
 import signal
 from argparse import ArgumentParser
 import datetime
@@ -77,4 +77,5 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('-c', type=int, default=0, help=f'选择模型参数序号: {ChatType.help_hint()}')
     args = parser.parse_args().c
-    main(args)
+    # main(args)
+    asyncio.run(main(args), debug=True)
