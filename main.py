@@ -4,7 +4,6 @@
 import signal
 from argparse import ArgumentParser
 import datetime
-
 from base.func_report_reminder import ReportReminder
 from configuration import Config
 from constants import ChatType
@@ -27,7 +26,7 @@ def weather_report(robot: Robot) -> None:
         # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
 
 
-def main(chat_type: int):
+async def main(chat_type: int):
     config = Config()
     wcf = Wcf(debug=True)
 
@@ -45,7 +44,7 @@ def main(chat_type: int):
 
     # 接收消息
     # robot.enableRecvMsg()     # 可能会丢消息？
-    robot.enableReceivingMsg()  # 加队列
+    await robot.enableReceivingMsg()  # 加队列
 
     # 每天 7 点发送天气预报
     robot.onEveryTime("07:00", weather_report, robot=robot)

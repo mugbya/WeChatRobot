@@ -6,8 +6,8 @@ import time
 from datetime import datetime
 import xml.etree.ElementTree as ET
 from queue import Empty
-from threading import Thread
-
+# from threading import Thread
+import asyncio
 from wcferry import Wcf, WxMsg
 
 from business import room_data
@@ -124,13 +124,13 @@ class Robot(Job):
             return all(value is not None for key, value in args.items() if key != 'proxy')
         return False
 
-    def toAt(self, msg: WxMsg) -> bool:
+    async def toAt(self, msg: WxMsg) -> bool:
         """处理被 @ 消息
         :param msg: 微信消息结构
         :return: 处理状态，`True` 成功，`False` 失败
         """
         if self.baseFunc.enable_robot(msg, self):
-            return self.toChitchat(msg)
+            return await self.toChitchat(msg)
         return False
 
     def toChengyu(self, msg: WxMsg) -> bool:
@@ -160,14 +160,14 @@ class Robot(Job):
 
         return status
 
-    def toChitchat(self, msg: WxMsg) -> bool:
+    async def toChitchat(self, msg: WxMsg) -> bool:
         """闲聊，接入 ChatGPT
         """
         if not self.chat:  # 没接 ChatGPT，固定回复
             rsp = "你@我干嘛？"
         else:  # 接了 ChatGPT，智能回复
             q = re.sub(r"@.*?[\u2005|\s]", "", msg.content).replace(" ", "")
-            rsp = self.chat.get_answer(q, (msg.roomid if msg.from_group() else msg.sender))
+            rsp = await self.chat.get_answer(q, (msg.roomid if msg.from_group() else msg.sender))
 
         if rsp:
             if msg.from_group():
@@ -180,7 +180,7 @@ class Robot(Job):
             self.LOG.error(f"无法从 ChatGPT 获得答案")
             return False
 
-    def processMsg(self, msg: WxMsg) -> None:
+    async def processMsg(self, msg: WxMsg) -> None:
         """当接收到消息的时候，会调用本方法。如果不实现本方法，则打印原始消息。
         此处可进行自定义发送的内容,如通过 msg.content 关键字自动获取当前天气信息，并发送到对应的群组@发送者
         群号：msg.roomid  微信ID：msg.sender  消息内容：msg.content
@@ -227,15 +227,15 @@ class Robot(Job):
             else:
                 if self.baseFunc.enable_robot(msg, self):
                     if not PersonFunc.handler_command(msg, self):
-                        self.toChitchat(msg)  # 闲聊
+                        await self.toChitchat(msg)  # 闲聊
 
-    def onMsg(self, msg: WxMsg) -> int:
+    async def onMsg(self, msg: WxMsg) -> int:
         try:
             self.LOG.info(msg)  # 打印信息
             flag = self.baseFunc.manage_command(msg, self)  # 首先执行管理指令
             self.LOG.info(f"【管理指令】是否是管理执行指令 {flag}")
             if not flag:
-                self.processMsg(msg)
+                await self.processMsg(msg)
         except Exception as e:
             self.LOG.error(e)
         return 0
@@ -243,8 +243,8 @@ class Robot(Job):
     def enableRecvMsg(self) -> None:
         self.wcf.enable_recv_msg(self.onMsg)
 
-    def enableReceivingMsg(self) -> None:
-        def innerProcessMsg(wcf: Wcf):
+    async def enableReceivingMsg(self) -> None:
+        async def innerProcessMsg(wcf: Wcf):
             while wcf.is_receiving_msg():
                 now_time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                 print(f"{now_time}【等待消息】************************")
@@ -260,7 +260,7 @@ class Robot(Job):
                     flag = self.baseFunc.manage_command(msg, self)  # 首先执行管理指令
                     self.LOG.info(f"【管理指令】是否是管理执行指令 {flag}")
                     if not flag:
-                        self.processMsg(msg)
+                        await self.processMsg(msg)
                     # self.processMsg(msg)
                 except Empty:
                     now_time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -270,8 +270,9 @@ class Robot(Job):
                     traceback.print_exc()
                     self.LOG.error(f"Receiving message error: {e}")
 
-        self.wcf.enable_receiving_msg()
-        Thread(target=innerProcessMsg, name="GetMessage", args=(self.wcf,), daemon=True).start()
+        await self.wcf.enable_receiving_msg()
+        await innerProcessMsg(self.wcf)
+        # Thread(target=innerProcessMsg, name="GetMessage", args=(self.wcf,), daemon=True).start()
 
     def sendTextMsg(self, msg: str, receiver: str, at_list: str = "") -> None:
         """ 发送消息
