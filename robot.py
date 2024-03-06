@@ -240,8 +240,8 @@ class Robot(Job):
             self.LOG.error(e)
         return 0
 
-    def enableRecvMsg(self) -> None:
-        self.wcf.enable_recv_msg(self.onMsg)
+    async def enableRecvMsg(self) -> None:
+        await self.wcf.enable_recv_msg(self.onMsg)
 
     async def enableReceivingMsg(self) -> None:
         async def innerProcessMsg(wcf: Wcf):
@@ -274,7 +274,7 @@ class Robot(Job):
         await innerProcessMsg(self.wcf)
         # Thread(target=innerProcessMsg, name="GetMessage", args=(self.wcf,), daemon=True).start()
 
-    def sendTextMsg(self, msg: str, receiver: str, at_list: str = "") -> None:
+    async def sendTextMsg(self, msg: str, receiver: str, at_list: str = "") -> None:
         """ 发送消息
         :param msg: 消息字符串
         :param receiver: 接收人wxid或者群id
@@ -289,22 +289,23 @@ class Robot(Job):
                 wxids = at_list.split(",")
                 for wxid in wxids:
                     # 根据 wxid 查找群昵称
-                    ats += f" @{self.wcf.get_alias_in_chatroom(wxid, receiver)}"
+                    rsp = await self.wcf.get_alias_in_chatroom(wxid, receiver)
+                    ats += f" @{rsp}"
 
         # {msg}{ats} 表示要发送的消息内容后面紧跟@，例如 北京天气情况为：xxx @张三
         if ats == "":
             self.LOG.info(f"To {receiver}: {msg}")
-            self.wcf.send_text(f"{msg}", receiver, at_list)
+            await self.wcf.send_text(f"{msg}", receiver, at_list)
         else:
             self.LOG.info(f"To {receiver}: {ats}\r{msg}")
-            self.wcf.send_text(f"{ats}\n\n{msg}", receiver, at_list)
+            await self.wcf.send_text(f"{ats}\n\n{msg}", receiver, at_list)
 
-    def getAllContacts(self) -> dict:
+    async def getAllContacts(self) -> dict:
         """
         获取联系人（包括好友、公众号、服务号、群成员……）
         格式: {"wxid": "NickName"}
         """
-        contacts = self.wcf.query_sql("MicroMsg.db", "SELECT UserName, NickName FROM Contact;")
+        contacts = await self.wcf.query_sql("MicroMsg.db", "SELECT UserName, NickName FROM Contact;")
         return {contact["UserName"]: contact["NickName"] for contact in contacts}
 
     def keepRunningAndBlockProcess(self) -> None:
