@@ -213,7 +213,7 @@ class Robot(Job):
 
         # 非群聊信息，按消息类型进行处理
         if msg.type == 37:  # 好友请求
-            self.autoAcceptFriendRequest(msg)
+            await self.autoAcceptFriendRequest(msg)
 
         elif msg.type == 10000:  # 系统信息
             self.sayHiToNewFriend(msg)
@@ -315,7 +315,7 @@ class Robot(Job):
             self.runPendingJobs()
             time.sleep(1)
 
-    def autoAcceptFriendRequest(self, msg: WxMsg) -> None:
+    async def autoAcceptFriendRequest(self, msg: WxMsg) -> None:
         try:
             xml = ET.fromstring(msg.content)
             v3 = xml.attrib["encryptusername"]
@@ -323,10 +323,10 @@ class Robot(Job):
             fromusername = xml.attrib["fromusername"] # 申请人的wxid
             content = xml.attrib["content"] # 发送的备注
             scene = int(xml.attrib["scene"])
-            self.wcf.accept_new_friend(v3, v4, scene)
+            await self.wcf.accept_new_friend(v3, v4, scene)
 
             if "试用" == content:
-                self.wcf.add_chatroom_members(room_data.test_room_id, fromusername)
+                await self.wcf.add_chatroom_members(room_data.test_room_id, fromusername)
         except Exception as e:
             self.LOG.error(f"同意好友出错：{e}")
 
