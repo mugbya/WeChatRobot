@@ -39,7 +39,7 @@ class Robot(Job):
         self.config = config
         self.LOG = logging.getLogger("Robot")
         self.wxid = self.wcf.get_self_wxid()
-        self.allContacts = self.getAllContacts()
+        # self.allContacts = self.getAllContacts()
 
         self.baseFunc = BaseFunc()
         self.roomFunc = RoomFunc()
@@ -117,6 +117,9 @@ class Robot(Job):
                 self.chat = None
 
         self.LOG.info(f"已选择: {self.chat}")
+
+    async def setAllContacts(self):
+        self.allContacts = await self.getAllContacts()
 
     @staticmethod
     def value_check(args: dict) -> bool:

@@ -37,6 +37,7 @@ async def main(chat_type: int):
     signal.signal(signal.SIGINT, handler)
 
     robot = Robot(config, wcf, chat_type)
+    await robot.setAllContacts()
     robot.LOG.info(f"WeChatRobot【{__version__}】成功启动···")
 
     # 机器人启动发送测试消息
